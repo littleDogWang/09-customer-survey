@@ -1,27 +1,35 @@
-# 客户反馈调查设计
+# Service Feedback Survey design
 
-## 定位
+## Positioning
 
-优先级 P3。验证结构化问卷、跳过、中断和结果保存。
+Scenario 03 belongs to AI Customer Service Agents: a short post-support service feedback interview. Its purpose is to learn whether the issue was resolved, understand the service rating and capture actionable improvements. It does not qualify sales leads.
 
-## 目标流程
+## Interview
 
-Agent 按固定顺序提问，允许用户跳过非必答问题；用户结束或完成后，生成结构化调查结果，标记是否需要跟进。
+1. Explain the purpose and ask permission. Use a support experience supplied by the user; no real ticket is loaded.
+2. Ask whether the issue was resolved: resolved, partially resolved or unresolved.
+3. Ask for CSAT on an explicit 1–5 scale.
+4. Branch on answers: low scores (1–2) prompt a reason; unresolved issues prompt what remains outstanding, including when the score is high. A resolved neutral experience prompts an improvement; a resolved positive experience prompts what worked well. Do not repeat a reason already given.
+5. Ask for one optional improvement suggestion.
+6. Ask separately for explicit contact consent. Do not infer consent from a low score. Accept optional comments naturally.
+7. Read back the answers, accept corrections and ask for confirmation before saving. Submit completed only with known resolution and rating; otherwise abandoned. Never fabricate skipped answers.
 
-## 第一版范围
+Ask one question per turn. Brief interruptions resume at the next unanswered question. A spoken early-exit request stops questioning and offers to save confirmed partial answers as abandoned. Declining participation or declining to save produces no record.
 
-- 问题：满意度、主要问题、是否愿意回访、补充意见。
-- 结果：`session_id`、回答、完成状态、跟进标记、时间戳。
-- 存储：本地 JSON 或 SQLite。
-- 渠道：浏览器 Web/RTC。
-- 暂不做：真实外呼、短信、CRM 写入和情感分析模型。
+The LLM history limit is 50 messages to retain answers across the longer interview and corrections. The prompt guides branching and review; this is not a deterministic questionnaire state machine. Real spoken acceptance is required to validate behavior.
 
-## Quickstart 改动点
+## Data and tools
 
-- 增加问卷配置和结果 API。
-- 在会话结束前后确定结果提交时机，避免只依赖浏览器关闭事件。
-- transcript 是对话证据，结构化结果是业务结果，两者分开保存。
+The existing results endpoint stores local JSON under `.scenario-data/03-customer-survey/results.json` or `TOP_TEN_DATA_DIR`. The save tool declares resolution, integer rating, reason category, free-text explanation, improvement and contact consent explicitly. The RTC channel is supplied to the Agent as the stable session_id. Retrying returns the first record without creating or replacing records.
 
-## 失败处理
+The server derives needs_follow_up from unresolved/partially resolved issues, rating 1–2 or explicit contact willingness. Contact consent remains separate, including false or unknown. This flag records need; no contact is scheduled.
 
-中断时保存已确认答案并标记 `abandoned`；重复提交使用同一 `session_id` 去重。
+`TOP_TEN_SCENARIO_TOOL_BASE_URL` must point to this app at a public HTTPS address reachable by the managed Agent. Without it, the interview can run but cannot save; the prompt requires explaining this. Clicking the UI End survey button stops the session and does not reconstruct or save unsubmitted answers. Ask the Agent to review and save first. Persistent deployment needs a writable durable data directory; ephemeral/serverless disk is not durable storage.
+
+## UI
+
+Use the official starter entry card, transcript, layout and agora-agent-uikit visualizer/microphone controls with Tailwind 3 and the original HSL theme. Agent-ui adoption is paused. The entry and active header identify Service Feedback Survey and scenario 03, with task-specific actions and messages. The interview, save tool and result contract remain unchanged. Ask users to review/save with the Agent before clicking End survey.
+
+## Boundaries and errors
+
+No CRM, ticket lookup, callback scheduling, SMS or outbound calls. No simulated replies in production. Input errors return 400; persistence errors return 500 and never claim success. Do not swallow corrupted storage. No business action may be claimed without a successful configured tool response.

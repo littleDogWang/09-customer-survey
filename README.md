@@ -198,3 +198,24 @@ Please do **not** open public issues for security reports. Email security@agora.
 ## License
 
 Released under the [MIT License](./LICENSE).
+
+## Scenario 03: Service Feedback Survey
+
+This repository runs a post-support service feedback interview, categorized as an AI Customer Service Agent. The assistant asks whether an issue was resolved, requests a 1–5 satisfaction rating, follows up on low scores or unresolved issues, gathers an improvement suggestion and asks for explicit contact consent. It reviews the answers before saving. The interface uses the official starter card, transcript, layout and agora-agent-uikit visualization/microphone controls. Agent-ui adoption is paused.
+
+Optional server environment:
+
+```dotenv
+# This app's public HTTPS origin, reachable by the managed Agent.
+TOP_TEN_SCENARIO_TOOL_BASE_URL=https://your-app.example.com
+# Writable durable directory; defaults to .scenario-data in the project root.
+TOP_TEN_DATA_DIR=/path/to/persistent/data
+```
+
+The browser can run a feedback interview without a tool URL, but cannot save it. The Agent is instructed to explain this. Localhost alone is not reachable by the cloud Agent. A writable local directory is suitable for a local demo; ephemeral/serverless filesystem storage does not provide durable records.
+
+`POST /api/scenarios/03-customer-survey/results` accepts session_id, answers and completed/abandoned status. Answers include issue_resolution (`resolved`, `partially_resolved`, `unresolved`), satisfaction_rating (integer 1–5), optional dissatisfaction_reason (`wait_time`, `resolution`, `communication`, `other`), main_issue, improvement_suggestion, willing_to_follow_up and additional_comments. Omit unanswered fields. Completed requires resolution and rating. The server timestamps each record and derives needs_follow_up from unresolved issues, scores of 1–2 or requested contact. Contact consent is separate; the flag does not schedule a callback. Repeated session IDs return the first saved result. Input errors return 400 and storage failures return 500.
+
+The RTC channel supplies a stable survey session_id to the Agent. Ask it to review and save before using **End survey**: clicking End stops the session without reconstructing unsubmitted answers. Spoken early exits can save confirmed partial answers as abandoned after permission.
+
+Run `pnpm run verify:scenario` for isolated result contracts; the full `pnpm run verify` includes this check. Real voice branching and cloud tool execution require a separate live session.

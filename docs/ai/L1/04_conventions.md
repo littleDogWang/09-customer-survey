@@ -35,7 +35,7 @@
 
 ## Styling and UI Kit Rules
 
-- Tailwind config must scan `./node_modules/agora-agent-uikit/dist/**/*.{js,mjs}`.
+- Tailwind 3 scans starter/uikit source in tailwind.config.ts.
 - Prefer existing quickstart layout components over introducing parallel shells.
 
 ## Documentation Synchronization
@@ -84,3 +84,7 @@ When changing workflow/contracts/ownership in `components` or `app/api`, update:
 
 - [conversation_lifecycle.md](L2/conversation_lifecycle.md) — Why StrictMode guard and hook ownership are required.
 - [transcript_pipeline.md](L2/transcript_pipeline.md) — UID remapping and turn-status handling rationale.
+
+## Scenario 03 UI styling
+
+Scenario 03 uses the starter UI and Tailwind 3 config. Tokens are HSL channels, used with hsl(var(--token)). Agent-ui adoption is paused; preserve the real RTC/RTM lifecycle and starter controls.

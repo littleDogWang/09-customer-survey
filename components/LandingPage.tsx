@@ -2,7 +2,6 @@
 
 import { useState, useRef, Suspense, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import type { RTMClient } from 'agora-rtm';
 import type {
   AgoraTokenData,
@@ -56,6 +55,8 @@ const AgoraProvider = dynamic(
 
 export default function LandingPage() {
   const [showConversation, setShowConversation] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const [ending, setEnding] = useState(false);
 
   // Preload heavy modules on mount so they're already cached when the user
   // clicks "Try it Now" — eliminates the ~1.8s dynamic-import delay.
@@ -132,7 +133,7 @@ export default function LandingPage() {
       setAgoraData({ ...responseData, agentId: agentData?.agent_id });
       setShowConversation(true);
     } catch (err) {
-      setError('Failed to start conversation. Please try again.');
+      setError('Could not start the feedback survey. Check microphone access and try again.');
       console.error('Error starting conversation:', err);
     } finally {
       setIsLoading(false);
@@ -177,6 +178,8 @@ export default function LandingPage() {
   );
 
   const handleEndConversation = async () => {
+    if (ending) return;
+    setEnding(true);
     // Stop the AI agent
     if (agoraData?.agentId) {
       try {
@@ -187,11 +190,14 @@ export default function LandingPage() {
           body: JSON.stringify({ agent_id: agoraData.agentId }),
         });
         if (!response.ok) {
-          console.error('Failed to stop agent:', await response.text());
+          throw new Error('Could not end the survey. Please try End survey again.');
         }
         // else console.log('Agent stopped successfully');
       } catch (error) {
         console.error('Error stopping agent:', error);
+        setError('Could not end the survey. Please try End survey again.');
+        setEnding(false);
+        return;
       }
     }
 
@@ -199,88 +205,28 @@ export default function LandingPage() {
     rtmClient?.logout().catch((err) => console.error('RTM logout error:', err));
     setRtmClient(null);
     setShowConversation(false);
+    setEnded(true);
+    setEnding(false);
+    setError(null);
   };
 
   return (
-    <div className="relative flex h-dvh min-h-screen flex-col overflow-hidden bg-background text-foreground">
-      {/* Hero shell: either shows the pre-call CTA or swaps in the live conversation experience. */}
-      <div
-        className={`flex min-h-0 flex-1 flex-col ${
-          showConversation
-            ? 'items-stretch justify-start'
-            : 'items-center justify-center'
-        }`}
-      >
-        <div
-          className={`z-10 flex min-h-0 flex-1 flex-col ${
-            showConversation
-              ? 'h-full w-full max-w-none items-stretch gap-0 px-0 text-left'
-              : 'w-full max-w-none items-center justify-center px-4 text-center'
-          }`}
-        >
-          {!showConversation ? (
-            <QuickstartPreCallCard
-              isLoading={isLoading}
-              error={error}
-              onStartConversation={handleStartConversation}
-            />
-          ) : agoraData && rtmClient ? (
-            <>
-              {/* Non-fatal invite warning: the browser session can still render even if agent start failed. */}
-              {agentJoinError && (
-                <div className="p-3 bg-destructive/10 rounded-md text-destructive text-sm max-w-sm">
-                  Failed to connect with AI agent. The conversation may not work
-                  as expected.
-                </div>
-              )}
-              {/* Browser-only conversation mount: RTC provider, error boundary, and lazy-loaded call UI. */}
-              <Suspense fallback={<LoadingSkeleton />}>
-                <ErrorBoundary>
-                  <AgoraProvider>
-                    <ConversationComponent
-                      agoraData={agoraData}
-                      rtmClient={rtmClient}
-                      onTokenWillExpire={handleTokenWillExpire}
-                      onEndConversation={handleEndConversation}
-                    />
-                  </AgoraProvider>
-                </ErrorBoundary>
-              </Suspense>
-            </>
-          ) : (
-            /* Fallback if session bootstrap partially succeeded but required state is missing. */
-            <p className="text-sm text-muted-foreground">
-              Failed to load conversation data.
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Persistent attribution footer for the pre-call and in-call views. */}
-      <footer className="fixed bottom-0 right-0 z-40 py-4 pr-4 md:py-6 md:pr-6">
-        <div className="flex items-center justify-end gap-2 text-muted-foreground">
-          <span className="text-xs font-medium tracking-wide uppercase">
-            Powered by
-          </span>
-          <a
-            href="https://agora.io/en/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-primary transition-colors"
-            aria-label="Visit Agora's website"
-          >
-            <Image
-              src="/agora-logo-rgb-blue.svg"
-              alt="Agora"
-              width={86}
-              height={24}
-              priority
-              className="h-6 w-auto hover:opacity-80 transition-opacity translate-y-1"
-            />
-            <span className="sr-only">Agora</span>
-          </a>
-        </div>
-      </footer>
+    <div className="flex h-dvh min-h-screen flex-col bg-background text-foreground">
+      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        {!showConversation ? (
+          <section className="flex flex-1 items-center justify-center px-4 py-8">
+            <QuickstartPreCallCard isLoading={isLoading} error={error} ended={ended} onStartConversation={handleStartConversation} />
+          </section>
+        ) : agoraData && rtmClient ? (
+          <>
+            {(agentJoinError || error) && <p role="alert" className="m-4 rounded-md border border-destructive p-3 text-sm text-destructive">{error || 'Could not connect to the Service Feedback Assistant. End the survey and try again.'}</p>}
+            <Suspense fallback={<LoadingSkeleton />}>
+              <ErrorBoundary><AgoraProvider><ConversationComponent agoraData={agoraData} rtmClient={rtmClient} onTokenWillExpire={handleTokenWillExpire} onEndConversation={handleEndConversation} ending={ending} /></AgoraProvider></ErrorBoundary>
+            </Suspense>
+          </>
+        ) : null}
+      </main>
+      <footer className="shrink-0 px-4 py-3 text-right text-xs text-muted-foreground">Powered by Agora · Service feedback · 03</footer>
     </div>
   );
 }

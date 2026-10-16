@@ -54,7 +54,7 @@ Agora Cloud
 
 - `agora-rtc-react` / `agora-rtc-sdk-ng` for media transport.
 - `agora-rtm` for data channel.
-- `agora-agent-client-toolkit` and `agora-agent-uikit` for conversation logic/UI.
+- `agora-agent-client-toolkit` for conversation logic; starter UI and agora-agent-uikit for visualization/microphone.
 - `agora-agents` for managed agent lifecycle.
 
 ## Deployment Modes
@@ -101,3 +101,7 @@ Agora Cloud
 
 - [conversation_lifecycle.md](L2/conversation_lifecycle.md) — Detailed bootstrapping and teardown timeline.
 - [transcript_pipeline.md](L2/transcript_pipeline.md) — Event mapping, UID remap, in-progress/completed segmentation.
+
+## Scenario 03 adaptation
+
+The service feedback prompt controls resolution, CSAT and conditional follow-up questions; it is not a deterministic question engine. Agent saving uses the existing REST tool and local JSON results route. UI uses the restored starter entry, transcript, layout and agora-agent-uikit visualizer/microphone controls with real RTC/RTM data. Review/save happens before UI End survey, which does not reconstruct unsubmitted answers. Contact-consent storage is separate from the server-derived follow-up need.

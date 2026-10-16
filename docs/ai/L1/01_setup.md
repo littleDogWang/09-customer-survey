@@ -61,7 +61,7 @@ Requires env/project binding:
 ## Local Run Notes
 
 - App + API routes run at `http://localhost:3000`.
-- Session starts from `QuickstartPreCallCard` (`Try it now`) and bootstraps token + RTM + invite flow.
+- Session starts from `QuickstartPreCallCard` (`Start feedback survey`) and bootstraps token + RTM + invite flow.
 - If transcript or agent join fails, first run `agora project doctor --deep`.
 
 ## CI Expectations
@@ -106,3 +106,7 @@ When setup docs/config change:
 
 - [conversation_lifecycle.md](L2/conversation_lifecycle.md) — Full start/join/teardown sequence.
 - [transcript_pipeline.md](L2/transcript_pipeline.md) — RTM transcript/event pipeline internals.
+
+## Scenario 03 optional persistence
+
+Set TOP_TEN_SCENARIO_TOOL_BASE_URL to this app's public HTTPS origin so the managed Agent can call save_survey_result. Set TOP_TEN_DATA_DIR to a writable durable directory, or use local .scenario-data for development. Missing tool configuration permits interviewing but not saving. Ephemeral serverless disk is not durable persistence. No additional vendor keys or CRM integration are required. verify includes verify:scenario.

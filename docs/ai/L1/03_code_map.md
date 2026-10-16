@@ -40,7 +40,7 @@ types/               Shared TypeScript route/component contracts
 
 - `scripts/verify-api-contracts.ts`: imports route handlers and validates contract behavior.
 - `scripts/doctor.mjs`: local setup checks consumed by `pnpm run doctor`.
-- `tailwind.config.ts`: includes `agora-agent-uikit` dist classes in content scan.
+- `app/globals.css`: starter HSL theme; tailwind.config.ts contains Tailwind 3 source scanning.
 
 ## Fast File Lookup
 
@@ -67,7 +67,7 @@ types/               Shared TypeScript route/component contracts
 
 - `public/*`: icons, logos, and heading SVG assets used in pre-call/in-call experience.
 - `app/globals.css` and `styles/globals.css`: baseline theme/layout styles.
-- `tailwind.config.ts`: utility class scan and theme extension.
+- `tailwind.config.ts`: starter utility class scanning and theme extension.
 
 ## Verification Path Mapping
 

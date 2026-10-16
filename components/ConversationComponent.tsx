@@ -95,10 +95,12 @@ export default function ConversationComponent({
   rtmClient,
   onTokenWillExpire,
   onEndConversation,
+  ending = false,
 }: ConversationComponentProps) {
   const client = useRTCClient();
   const remoteUsers = useRemoteUsers();
   const [isEnabled, setIsEnabled] = useState(true);
+  const [micPending, setMicPending] = useState(false);
   const [isAgentConnected, setIsAgentConnected] = useState(false);
   const [isConnectionDetailsOpen, setIsConnectionDetailsOpen] = useState(false);
 
@@ -423,30 +425,29 @@ export default function ConversationComponent({
   }, [connectionState, connectionIssues]);
 
   const visualizerState = useMemo(
-    () =>
-      mapAgentVisualizerState(agentState, isAgentConnected, connectionState),
+    () => mapAgentVisualizerState(agentState, isAgentConnected, connectionState),
     [agentState, isAgentConnected, connectionState],
   );
 
   /**
    * Mute/unmute via track.setEnabled() only — usePublish owns publish state.
    * If we also unpublish in the toggle, usePublish and the button fight each other
-   * and break the MicButtonWithVisualizer Web Audio graph.
+   * and break microphone ownership.
    */
   const handleMicToggle = useCallback(async () => {
+    if (micPending || !localMicrophoneTrack) return;
+    setMicPending(true);
     const next = !isEnabled;
     const track = localMicrophoneTrack;
-    if (!track) {
-      setIsEnabled(next);
-      return;
-    }
     try {
       await track.setEnabled(next);
       setIsEnabled(next);
     } catch (error) {
       console.error('Failed to toggle microphone:', error);
+    } finally {
+      setMicPending(false);
     }
-  }, [isEnabled, localMicrophoneTrack]);
+  }, [isEnabled, localMicrophoneTrack, micPending]);
 
   const handleTokenWillExpire = useCallback(async () => {
     if (!onTokenWillExpire || !joinedUID) return;
@@ -463,10 +464,6 @@ export default function ConversationComponent({
   }, [client, onTokenWillExpire, joinedUID, rtmClient]);
 
   useClientEvent(client, 'token-privilege-will-expire', handleTokenWillExpire);
-
-  const handleEndConversation = useCallback(async () => {
-    onEndConversation();
-  }, [onEndConversation]);
 
   return (
     <QuickstartConversationLayout
@@ -507,7 +504,7 @@ export default function ConversationComponent({
           role="group"
           aria-label="Audio controls"
         >
-          <div className="conversation-mic-host flex items-center justify-center">
+          <fieldset disabled={ending || micPending || !localMicrophoneTrack} aria-label="Microphone control" className="conversation-mic-host flex items-center justify-center">
             <MicButtonWithVisualizer
               isEnabled={isEnabled}
               setIsEnabled={setIsEnabled}
@@ -518,11 +515,12 @@ export default function ConversationComponent({
               enabledColor="hsl(var(--primary))"
               disabledColor="hsl(var(--destructive))"
             />
-          </div>
+          </fieldset>
           <MicrophoneSelector localMicrophoneTrack={localMicrophoneTrack} />
         </div>
       }
-      onEndConversation={handleEndConversation}
+      onEndConversation={onEndConversation}
+      ending={ending}
     />
   );
 }

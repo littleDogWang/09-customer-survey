@@ -99,3 +99,9 @@ From `types/conversation.ts` (high-use):
 
 - [conversation_lifecycle.md](L2/conversation_lifecycle.md) — How route contracts are used in sequence.
 - [transcript_pipeline.md](L2/transcript_pipeline.md) — Event-level contract mapping.
+
+## Scenario 03 result contract
+
+POST `/api/scenarios/03-customer-survey/results`: `{ session_id, answers, status }`, where status is completed or abandoned. Completed needs issue_resolution (resolved/partially_resolved/unresolved) and satisfaction_rating (integer 1–5). Optional answers: dissatisfaction_reason (wait_time/resolution/communication/other), main_issue, improvement_suggestion, willing_to_follow_up, additional_comments and the existing satisfaction text. Unanswered fields stay absent. Return `{ result, duplicate }`, 201 on first save, 200 on duplicate, 400 on invalid data, 500 on storage failure. First record wins. Server derives needs_follow_up from non-resolved outcomes, ratings 1–2 or explicit contact willingness; consent is stored separately. Timestamp is server-generated.
+
+Optional TOP_TEN_SCENARIO_TOOL_BASE_URL registers the cloud save tool at this app's public HTTPS origin. TOP_TEN_DATA_DIR selects writable durable storage. The invite prompt supplies channel_name as session_id; no new client startup fields are required. No tool URL means no Agent persistence. End survey only stops the session.

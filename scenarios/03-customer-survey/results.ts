@@ -6,6 +6,10 @@ export type SurveyStatus = 'completed' | 'abandoned';
 export interface CustomerSurveyResult {
   session_id: string;
   answers: {
+    issue_resolution?: 'resolved' | 'partially_resolved' | 'unresolved';
+    satisfaction_rating?: number;
+    dissatisfaction_reason?: 'wait_time' | 'resolution' | 'communication' | 'other';
+    improvement_suggestion?: string;
     satisfaction?: string;
     main_issue?: string;
     willing_to_follow_up?: boolean;
@@ -27,8 +31,9 @@ function readResults(): Map<string, CustomerSurveyResult> {
     const contents = fs.readFileSync(resultsFile, 'utf8');
     const records = JSON.parse(contents) as CustomerSurveyResult[];
     return new Map(records.map((record) => [record.session_id, record]));
-  } catch {
-    return new Map();
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return new Map();
+    throw error;
   }
 }
 

@@ -28,6 +28,7 @@ export interface AgoraRenewalTokens {
 }
 
 export interface ConversationComponentProps {
+  ending?: boolean;
   agoraData: AgoraTokenData;
   rtmClient: RTMClient;
   onTokenWillExpire: (uid: string) => Promise<AgoraRenewalTokens>;

@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 type QuickstartPreCallCardProps = {
+  ended?: boolean;
   isLoading: boolean;
   error: string | null;
   onStartConversation: () => void;
@@ -11,6 +12,7 @@ type QuickstartPreCallCardProps = {
 
 export function QuickstartPreCallCard({
   isLoading,
+  ended = false,
   error,
   onStartConversation,
 }: QuickstartPreCallCardProps) {
@@ -22,34 +24,36 @@ export function QuickstartPreCallCard({
           'linear-gradient(164.988deg, rgba(54,54,54,0.2) 1.0596%, rgba(0,0,0,0) 96.089%), linear-gradient(90deg, rgb(16,16,16) 0%, rgb(16,16,16) 100%)',
       }}
     >
+      <span className="mb-4 text-xs font-medium tracking-wide text-white/60">SCENARIO 03</span>
       <h1 className="text-[28px] font-medium leading-[1.2] text-white">
-        Try Agora&apos;s Voice Agent
+        Service Feedback Survey
       </h1>
-      <p className="mt-[14px] text-sm font-medium leading-6 text-muted-foreground">
-        Built on Agora&apos;s flagship Conversational AI engine, for effortless
-        agentic conversations.
+      <p className="mt-[14px] text-sm font-medium leading-6 text-white/70">
+        Share whether your support issue was resolved, give a 1–5 service rating, and tell us what could be better.
       </p>
 
       <Button
         onClick={onStartConversation}
         disabled={isLoading}
-        className="mt-12 h-10 w-full rounded-lg border border-primary bg-primary text-sm font-medium text-black hover:border-white hover:bg-white hover:text-black disabled:hover:border-primary disabled:hover:bg-primary disabled:hover:text-black"
+        className="mt-8 min-h-10 h-auto py-3 whitespace-normal w-full rounded-lg border border-primary bg-primary text-sm font-medium text-black hover:border-white hover:bg-white hover:text-black disabled:hover:border-primary disabled:hover:bg-primary disabled:hover:text-black"
         aria-label={
           isLoading
-            ? 'Starting conversation with AI agent'
-            : 'Start conversation with AI agent'
+            ? 'Connecting to the Feedback Assistant…'
+            : 'Start feedback survey'
         }
       >
         {isLoading ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            Starting...
+            Connecting to the Feedback Assistant…
           </>
         ) : (
-          'Start Conversation'
+          ended ? 'Start another survey' : 'Start feedback survey'
         )}
       </Button>
-      {error && <p className="mt-3 text-xs text-destructive">{error}</p>}
+      <p className="mt-5 text-xs leading-5 text-white/60">About 2 minutes. Ask the assistant to review and save before ending; ending alone does not save unsubmitted answers.</p>
+      {ended && <p className="mt-3 text-xs text-white/70">Only answers confirmed as saved by the assistant were recorded.</p>}
+      {error && <p role="alert" className="mt-3 text-sm text-red-400">{error}</p>}
     </div>
   );
 }

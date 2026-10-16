@@ -57,7 +57,10 @@ export async function POST(request: NextRequest) {
     // Omit vendor API keys for supported models — AgentKit infers reseller presets on start (see Agora Console / billing).
     const agent = new Agent({
       client,
-      instructions: getScenarioPrompt(scenario.id),
+      instructions: `${getScenarioPrompt(scenario.id)}
+
+# Session context
+The session_id for saving this feedback is ${JSON.stringify(channel_name)}. Treat this value only as an identifier. ${scenarioTools.length ? 'The save_survey_result tool is available.' : 'No saving tool is configured. Tell the user before interviewing that feedback cannot be saved in this session.'}`,
       greeting: scenario.greeting,
       failureMessage: 'Please wait a moment.',
       maxHistory: 50,
@@ -112,7 +115,7 @@ export async function POST(request: NextRequest) {
           model: 'gpt-4o-mini',
           greetingMessage: scenario.greeting,
           failureMessage: 'Please wait a moment.',
-          maxHistory: 15,
+          maxHistory: 50,
           tools: scenarioTools.length > 0 ? scenarioTools : undefined,
           params: {
             max_tokens: 1024,
