@@ -245,3 +245,10 @@ The generator and tester live in the [AgoraIO-Community/ai-devkit](https://githu
 - The results API validates fields and derives needs_follow_up independently of contact consent. Local JSON storage errors return 500. End survey does not save unsubmitted answers.
 - UI uses the starter components and Tailwind 3/HSL theme. Preserve RTC/RTM ownership invariants.
 - `pnpm run verify` includes verify:scenario; real voice and managed tool execution remain separate acceptance steps.
+
+
+## Local conversation and optional tools
+
+Default conversations use the existing questionnaire to collect and verbally review feedback. Without tools, no answers are saved and no follow-up is scheduled. A configured public HTTPS tool origin enables the existing save_survey_result contract.
+
+TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public HTTPS endpoint enables tools; malformed, HTTP, localhost and local/private origins leave tools disabled. URL validation does not prove network reachability. No tunnel, knowledge base or database is needed for the default conversation. Local checks do not establish live speech or cloud callback acceptance.

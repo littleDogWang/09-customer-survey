@@ -219,3 +219,10 @@ The browser can run a feedback interview without a tool URL, but cannot save it.
 The RTC channel supplies a stable survey session_id to the Agent. Ask it to review and save before using **End survey**: clicking End stops the session without reconstructing unsubmitted answers. Spoken early exits can save confirmed partial answers as abandoned after permission.
 
 Run `pnpm run verify:scenario` for isolated result contracts; the full `pnpm run verify` includes this check. Real voice branching and cloud tool execution require a separate live session.
+
+
+## Local conversation and optional tools
+
+Default conversations use the existing questionnaire to collect and verbally review feedback. Without tools, no answers are saved and no follow-up is scheduled. A configured public HTTPS tool origin enables the existing save_survey_result contract.
+
+TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public HTTPS endpoint enables tools; malformed, HTTP, localhost and local/private origins leave tools disabled. URL validation does not prove network reachability. No tunnel, knowledge base or database is needed for the default conversation. Local checks do not establish live speech or cloud callback acceptance.

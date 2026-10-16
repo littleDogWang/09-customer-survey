@@ -81,3 +81,10 @@ Do not recreate Agora ConvoAI integration from memory. Provider schemas, SDK bui
 3. Run `pnpm run doctor` and `pnpm run dev`.
 4. Validate with `pnpm run verify` before sharing modifications.
 5. Customize agent behavior and UI using the supported surfaces above.
+
+
+## Local conversation and optional tools
+
+Default conversations use the existing questionnaire to collect and verbally review feedback. Without tools, no answers are saved and no follow-up is scheduled. A configured public HTTPS tool origin enables the existing save_survey_result contract.
+
+TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public HTTPS endpoint enables tools; malformed, HTTP, localhost and local/private origins leave tools disabled. URL validation does not prove network reachability. No tunnel, knowledge base or database is needed for the default conversation. Local checks do not establish live speech or cloud callback acceptance.

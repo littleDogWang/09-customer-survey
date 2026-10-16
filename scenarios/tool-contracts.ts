@@ -1,7 +1,23 @@
 import type { LlmTool } from 'agora-agents';
 
+export function getToolBaseUrl(value = process.env.TOP_TEN_SCENARIO_TOOL_BASE_URL): string | null {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase().replace(/\.$/, '');
+    const localHost = (!host.includes('.') && !host.startsWith('[')) || /(^|\.)(localhost|local|internal)$/.test(host) ||
+      /^(0\.|10\.|127\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.)/.test(host) ||
+      /^(\[::|\[f[cd]|\[fe[89ab])/.test(host);
+    if (url.protocol !== 'https:' || localHost || url.username || url.password || url.search || url.hash) return null;
+    return url.toString().replace(/\/$/, '');
+  } catch {
+    return null;
+  }
+}
+
 export function getScenarioTools(_scenarioId: string, baseUrl = process.env.TOP_TEN_SCENARIO_TOOL_BASE_URL): LlmTool[] {
-  if (!baseUrl) return [];
+  const origin = getToolBaseUrl(baseUrl);
+  if (!origin) return [];
   return [{
     type: 'function',
     function: {
@@ -31,7 +47,7 @@ export function getScenarioTools(_scenarioId: string, baseUrl = process.env.TOP_
     },
     server: {
       method: 'POST',
-      url: `${baseUrl.replace(/\/$/, '')}/api/scenarios/03-customer-survey/results`,
+      url: `${origin}/api/scenarios/03-customer-survey/results`,
       body: { session_id: '{{args.session_id}}', answers: '{{args.answers}}', status: '{{args.status}}' },
     },
   }];
