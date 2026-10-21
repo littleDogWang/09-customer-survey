@@ -201,7 +201,7 @@ Released under the [MIT License](./LICENSE).
 
 ## Scenario 03: Service Feedback Survey
 
-This repository runs a post-support service feedback interview, categorized as an AI Customer Service Agent. The assistant asks whether an issue was resolved, requests a 1–5 satisfaction rating, follows up on low scores or unresolved issues, gathers an improvement suggestion and asks for explicit contact consent. It reviews the answers before saving. The interface uses the official starter card, transcript, layout and agora-agent-uikit visualization/microphone controls. Agent-ui adoption is paused.
+This repository runs a post-support service feedback interview, categorized as an AI Customer Service Agent. The assistant asks whether an issue was resolved, requests a 1–5 satisfaction rating, follows up on low scores or unresolved issues, gathers an improvement suggestion and asks for explicit contact consent. It reviews the answers before saving. The interface uses the adopted scenario-01 components, theme and real voice controls.
 
 Optional server environment:
 
@@ -226,3 +226,7 @@ Run `pnpm run verify:scenario` for isolated result contracts; the full `pnpm run
 Default conversations use the existing questionnaire to collect and verbally review feedback. Without tools, no answers are saved and no follow-up is scheduled. A configured public HTTPS tool origin enables the existing save_survey_result contract.
 
 TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public HTTPS endpoint enables tools; malformed, HTTP, localhost and local/private origins leave tools disabled. URL validation does not prove network reachability. No tunnel, knowledge base or database is needed for the default conversation. Local checks do not establish live speech or cloud callback acceptance.
+
+## Interface
+
+The interface follows scenario 01: task-specific entry and welcome, persistent scenario identity, activity canvas, transcript and Glass voice controls. Inspector shows actual session evidence; Build provides this repository’s setup commands. Business results retain their original contracts and appear below the voice workspace. Edit `scenarios/03-customer-survey/presentation.ts` for scenario copy. Styling uses Tailwind 4/PostCSS and the vendored theme; see `styles/agent-ui/PROVENANCE.md`. Local checks and browser rendering do not establish live voice/cloud-tool acceptance.

@@ -35,7 +35,7 @@
 
 ## Styling and UI Kit Rules
 
-- Tailwind 3 scans starter/uikit source in tailwind.config.ts.
+- Tailwind 4 scans component classes and UIKit using @source in app/globals.css.
 - Prefer existing quickstart layout components over introducing parallel shells.
 
 ## Documentation Synchronization
@@ -85,6 +85,10 @@ When changing workflow/contracts/ownership in `components` or `app/api`, update:
 - [conversation_lifecycle.md](L2/conversation_lifecycle.md) — Why StrictMode guard and hook ownership are required.
 - [transcript_pipeline.md](L2/transcript_pipeline.md) — UID remapping and turn-status handling rationale.
 
-## Scenario 03 UI styling
+## Scenario UI styling
 
-Scenario 03 uses the starter UI and Tailwind 3 config. Tokens are HSL channels, used with hsl(var(--token)). Agent-ui adoption is paused; preserve the real RTC/RTM lifecycle and starter controls.
+Use Tailwind 4 CSS theme roles in app/globals.css; no HSL channel wrapping. Preserve actual RTC/RTM callbacks.
+
+## Scenario 01 UI alignment (2026-10-21)
+
+`ScenarioShell` and `useScenarioUi` compose the entry, persistent identity, activity workspace, Inspector and Build panels around existing session bootstrap. `scenarios/presentation.ts` loads scenario-specific content. `ConversationComponent` reports actual activity/inspection events and uses the adopted transcript and Glass controls. Business views remain scenario-owned below the voice workspace. Tailwind 4/PostCSS, theme recipes and MiSans match scenario 01. `scenarios/runtime-profile.ts` displays the non-secret configured pipeline; keep it aligned with the invite route. Never treat browser fixtures as live RTC/tool acceptance.

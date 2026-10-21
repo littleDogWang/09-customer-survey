@@ -11,7 +11,7 @@ import type {
 } from '../types/conversation';
 import { ErrorBoundary } from './ErrorBoundary';
 import { LoadingSkeleton } from './LoadingSkeleton';
-import { QuickstartPreCallCard } from './QuickstartPreCallCard';
+import { ScenarioShell, useScenarioUi } from './ScenarioShell';
 
 // Dynamically import the ConversationComponent with ssr disabled
 const ConversationComponent = dynamic(() => import('./ConversationComponent'), {
@@ -55,7 +55,7 @@ const AgoraProvider = dynamic(
 
 export default function LandingPage() {
   const [showConversation, setShowConversation] = useState(false);
-  const [ended, setEnded] = useState(false);
+  const ui = useScenarioUi();
   const [ending, setEnding] = useState(false);
 
   // Preload heavy modules on mount so they're already cached when the user
@@ -72,6 +72,7 @@ export default function LandingPage() {
 
   const handleStartConversation = async () => {
     setIsLoading(true);
+    ui.start();
     setError(null);
     setAgentJoinError(false);
 
@@ -130,7 +131,7 @@ export default function LandingPage() {
 
       // 3. All dependencies ready — store state and show conversation
       setRtmClient(rtm);
-      setAgoraData({ ...responseData, agentId: agentData?.agent_id });
+      setAgoraData({ ...responseData, agentId: agentData?.agent_id, startedAt: Date.now() });
       setShowConversation(true);
     } catch (err) {
       setError('Could not start the feedback survey. Check microphone access and try again.');
@@ -205,28 +206,21 @@ export default function LandingPage() {
     rtmClient?.logout().catch((err) => console.error('RTM logout error:', err));
     setRtmClient(null);
     setShowConversation(false);
-    setEnded(true);
+    ui.end();
     setEnding(false);
     setError(null);
   };
 
   return (
-    <div className="flex h-dvh min-h-screen flex-col bg-background text-foreground">
-      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        {!showConversation ? (
-          <section className="flex flex-1 items-center justify-center px-4 py-8">
-            <QuickstartPreCallCard isLoading={isLoading} error={error} ended={ended} onStartConversation={handleStartConversation} />
-          </section>
-        ) : agoraData && rtmClient ? (
-          <>
-            {(agentJoinError || error) && <p role="alert" className="m-4 rounded-md border border-destructive p-3 text-sm text-destructive">{error || 'Could not connect to the Service Feedback Assistant. End the survey and try again.'}</p>}
-            <Suspense fallback={<LoadingSkeleton />}>
-              <ErrorBoundary><AgoraProvider><ConversationComponent agoraData={agoraData} rtmClient={rtmClient} onTokenWillExpire={handleTokenWillExpire} onEndConversation={handleEndConversation} ending={ending} /></AgoraProvider></ErrorBoundary>
-            </Suspense>
-          </>
-        ) : null}
-      </main>
-      <footer className="shrink-0 px-4 py-3 text-right text-xs text-muted-foreground">Powered by Agora · Service feedback · 03</footer>
-    </div>
+    <ScenarioShell ui={ui} active={showConversation} loading={isLoading} error={error} disabled={false} onStart={handleStartConversation}
+    >
+      {agentJoinError && <p role="alert">The assistant could not connect. End this session and try again.</p>}
+      {error && <p className="demo-workspace-fallback" role="alert">{error}</p>}
+      {showConversation && agoraData && rtmClient && <Suspense fallback={<LoadingSkeleton />}><ErrorBoundary><AgoraProvider>
+        <ConversationComponent agoraData={agoraData} rtmClient={rtmClient} onTokenWillExpire={handleTokenWillExpire} onEndConversation={handleEndConversation}
+          onActivityChange={ui.setActivity} onInspectionChange={ui.setInspection} ending={ending}
+          startupError={agentJoinError ? "The assistant could not connect. End this session and try again." : undefined} />
+      </AgoraProvider></ErrorBoundary></Suspense>}
+    </ScenarioShell>
   );
 }

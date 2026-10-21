@@ -54,7 +54,7 @@ Agora Cloud
 
 - `agora-rtc-react` / `agora-rtc-sdk-ng` for media transport.
 - `agora-rtm` for data channel.
-- `agora-agent-client-toolkit` for conversation logic; starter UI and agora-agent-uikit for visualization/microphone.
+- `agora-agent-client-toolkit` for conversation logic; adopted agent-ui components and theme for presentation.
 - `agora-agents` for managed agent lifecycle.
 
 ## Deployment Modes
@@ -104,4 +104,8 @@ Agora Cloud
 
 ## Scenario 03 adaptation
 
-The service feedback prompt controls resolution, CSAT and conditional follow-up questions; it is not a deterministic question engine. Agent saving uses the existing REST tool and local JSON results route. UI uses the restored starter entry, transcript, layout and agora-agent-uikit visualizer/microphone controls with real RTC/RTM data. Review/save happens before UI End survey, which does not reconstruct unsubmitted answers. Contact-consent storage is separate from the server-derived follow-up need.
+The service feedback prompt controls resolution, CSAT and conditional follow-up questions; it is not a deterministic question engine. Agent saving uses the existing REST tool and local JSON results route. UI uses the adopted scenario-01 entry, transcript, layout and Glass controls with real RTC/RTM data. Review/save happens before UI End survey, which does not reconstruct unsubmitted answers. Contact-consent storage is separate from the server-derived follow-up need.
+
+## Scenario 01 UI alignment (2026-10-21)
+
+`ScenarioShell` and `useScenarioUi` compose the entry, persistent identity, activity workspace, Inspector and Build panels around existing session bootstrap. `scenarios/presentation.ts` loads scenario-specific content. `ConversationComponent` reports actual activity/inspection events and uses the adopted transcript and Glass controls. Business views remain scenario-owned below the voice workspace. Tailwind 4/PostCSS, theme recipes and MiSans match scenario 01. `scenarios/runtime-profile.ts` displays the non-secret configured pipeline; keep it aligned with the invite route. Never treat browser fixtures as live RTC/tool acceptance.

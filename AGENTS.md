@@ -4,16 +4,8 @@ This guide is for coding agents making changes in `agent-quickstart-nextjs`.
 
 ## Shared scenario UI requirements
 
-### Current UI exception for scenarios 03 and 04
+The 2026-10-21 UI alignment supersedes the earlier starter-only exception. Use the actual vendored scenario-01 components and theme: scenario-specific entry Dialog, persistent scenario identity, real ConversationPanel and Glass VoiceDock, AgentSignal, Inspector and Build dialogs. Preserve all scenario business operations and authoritative results.
 
-At the user's request, scenarios 03 and 04 use the official quickstart starter UI while agent-ui adoption is paused. Scenario 01 keeps its existing agent-ui implementation. This exception takes precedence over earlier adoption plans.
-
-- Use a scenario-specific starter entry card with task title, description, action, loading/error copy and accessible labels. No agent-ui Dialog is required.
-- Keep the scenario name, identifier and purpose identifiable in the entry and active conversation. Activity state must not replace the scenario identity.
-- Use starter components, agora-agent-uikit visualizer/microphone controls, Tailwind 3 and the starter theme. Do not reintroduce shczhen/agent-ui source, theme or dependencies without an explicit user request.
-- Preserve scenario business workflows, API contracts, authoritative results, RTC/RTM lifecycle and hook ownership. Verify actual desktop/mobile rendering; simulated UI acceptance does not prove real voice/tool execution.
-
-The shared specification lives at `scenario-repos/SCENARIO_UI_RULES.md` in the workspace (`../SCENARIO_UI_RULES.md` relative to this file). This exception is self-contained for independent clones.
 
 ## U.S. scenario content
 
@@ -49,7 +41,7 @@ The sections below (Start Here, Patterns, Anti-Patterns, etc.) remain the canoni
 - Client RTC: `agora-rtc-react` hooks over `agora-rtc-sdk-ng`
 - Messaging: `agora-rtm` for transcripts, agent state, metrics, and error events
 - Toolkit core: `agora-agent-client-toolkit` for `AgoraVoiceAI`, transcript helpers, and turn status
-- UI components: starter transcript/layout and `agora-agent-uikit` visualizer/microphone controls
+- UI components: vendored agent-ui source, scenario-01 theme, application-owned activity canvas; see styles/agent-ui/PROVENANCE.md.
 - Server SDK: `agora-agents` for managed agent session startup
 - API routes: token generation, agent invite, chat, and stop routes live in `app/api`
 - Default agent config: Agora-managed STT, LLM, and TTS; `.env.local` contains only Agora project credentials
@@ -142,7 +134,7 @@ useEffect(() => {
 ### Tokens and Styling
 
 - RTM token access must come from `RtcTokenBuilder.buildTokenWithRtm`; a standard RTC-only token does not grant RTM access.
-- Tailwind 3 scans starter and uikit classes in tailwind.config.ts; theme values are HSL channels.
+- Tailwind 4 uses CSS theme roles and @source in app/globals.css.
 
 ## Working Rules
 
@@ -247,7 +239,7 @@ The generator and tester live in the [AgoraIO-Community/ai-devkit](https://githu
 - The prompt asks resolution, 1–5 CSAT, relevant reason, optional improvement, explicit contact consent and confirmed review. It skips answers already given and offers abandoned persistence on spoken early exit with consent.
 - `scenarios/tool-contracts.ts` provides the typed save_survey_result tool only with TOP_TEN_SCENARIO_TOOL_BASE_URL. The invite route supplies the RTC channel as session_id.
 - The results API validates fields and derives needs_follow_up independently of contact consent. Local JSON storage errors return 500. End survey does not save unsubmitted answers.
-- UI uses the starter components and Tailwind 3/HSL theme. Preserve RTC/RTM ownership invariants.
+- UI uses the scenario-01 components and Tailwind 4 theme. Preserve RTC/RTM ownership invariants.
 - `pnpm run verify` includes verify:scenario; real voice and managed tool execution remain separate acceptance steps.
 
 
@@ -256,3 +248,7 @@ The generator and tester live in the [AgoraIO-Community/ai-devkit](https://githu
 Default conversations use the existing questionnaire to collect and verbally review feedback. Without tools, no answers are saved and no follow-up is scheduled. A configured public HTTPS tool origin enables the existing save_survey_result contract.
 
 TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public HTTPS endpoint enables tools; malformed, HTTP, localhost and local/private origins leave tools disabled. URL validation does not prove network reachability. No tunnel, knowledge base or database is needed for the default conversation. Local checks do not establish live speech or cloud callback acceptance.
+
+## Scenario 01 UI alignment (2026-10-21)
+
+`ScenarioShell` and `useScenarioUi` compose the entry, persistent identity, activity workspace, Inspector and Build panels around existing session bootstrap. `scenarios/presentation.ts` loads scenario-specific content. `ConversationComponent` reports actual activity/inspection events and uses the adopted transcript and Glass controls. Business views remain scenario-owned below the voice workspace. Tailwind 4/PostCSS, theme recipes and MiSans match scenario 01. `scenarios/runtime-profile.ts` displays the non-secret configured pipeline; keep it aligned with the invite route. Never treat browser fixtures as live RTC/tool acceptance.

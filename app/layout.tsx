@@ -1,16 +1,15 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { UiProviders } from '@/components/UiProviders';
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export const metadata: Metadata = {
   title: 'Service Feedback Survey | Agora',
-  description:
-    'Share your support experience in a short voice survey: resolution, satisfaction and ideas for better service.',
+  description: 'Share whether your support issue was resolved, rate the service and suggest improvements.',
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -39,8 +38,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
-      <body className="h-full min-h-screen">{children}</body>
+    <html lang="en-US" className="h-full dark">
+      <body className="h-full min-h-screen"><UiProviders>{children}</UiProviders></body>
     </html>
   );
 }
