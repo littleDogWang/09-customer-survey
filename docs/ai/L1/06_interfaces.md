@@ -1,114 +1,47 @@
 # 06 Interfaces
 
-> Contracts at repo boundaries: API routes, env vars, runtime events, and shared TypeScript payloads.
+> Actual scenario API, event and configuration boundaries.
 
-## HTTP Route Contracts
+## Browser Or User-Facing APIs
 
-### `GET /api/generate-agora-token`
+- `GET /api/generate-agora-token`: optional uid/channel; returns `{ token, uid, channel }`; server credential/configuration errors return failure.
+- `POST /api/invite-agent`: requester/channel are required. The invite body contains `requester_id` and `channel_name`; the server supplies the channel as survey `session_id`. Returns Agent ID, creation time and state; input and runtime failures are reported explicitly.
+- `POST /api/stop-conversation`: requires agent_id; already-stopping/not-found handling is idempotent.
+- `POST /api/chat/completions`: optional custom-LLM proxy, not used by the default managed pipeline.
 
-Query params:
+`save_survey_result` calls `POST /api/scenarios/03-customer-survey/results` with `session_id`, `answers` and `status`. The invite supplies the RTC channel as the survey session ID. The first saved record for that session wins; retries return the existing result. `results.ts` derives the storage path; server route validation determines follow-up need.
 
-- `uid` optional; invalid/zero resolves to random RTM-safe UID.
-- `channel` optional; defaults to generated `ai-conversation-<ts>-<rand>`.
+The questionnaire and verbal review work without business tools. Answers are not saved and no follow-up is scheduled.
 
-Success response:
+`save_survey_result` saves reviewed answers as local JSON. Complete results require resolution and a 1–5 rating; partial answers can be saved as abandoned with the user's agreement.
 
-```json
-{ "token": "...", "uid": "1234", "channel": "ai-conversation-..." }
-```
+Use the scenario-specific entry and persistent identity; starting voice requires a user action.
 
-Failure response: `{ "error": string, "details"?: string }` with `500`.
 
-### `POST /api/invite-agent`
 
-Body (`ClientStartRequest`):
+See [scenario guide](../../../scenarios/03-customer-survey/README.md) and the scenario source for exact business request shapes, validation errors and ownership rules.
 
-```json
-{ "requester_id": "1234", "channel_name": "ai-conversation-..." }
-```
+## Events And Media
 
-Success (`AgentResponse`):
-
-```json
-{ "agent_id": "...", "create_ts": 1710000000, "state": "RUNNING" }
-```
-
-Validation failures return `400`; server failures return `500`.
-
-### `POST /api/stop-conversation`
-
-Body (`StopConversationRequest`): `{ "agent_id": "..." }`.
-
-Responses:
-
-- `{ "success": true }`
-- `{ "success": true, "state": "already-stopping" }` for idempotent stop state
-- `{ "error": string }` on failure
-
-### `POST /api/chat/completions`
-
-Optional SSE proxy path (not default runtime path). Requires `NEXT_LLM_API_KEY` and `NEXT_LLM_URL` when used.
-
-## Event/Data Interfaces
-
-- RTM transcript/state/metrics/errors consumed through `AgoraVoiceAI` event emitter.
-- Raw RTM `message` event parsed as fallback for `message.error` and `message.sal_status` payloads.
-- `AGENT_METRICS` payloads displayed by `QuickstartPipelineMetrics`.
+RTC carries microphone and synthesized audio. RTM/toolkit provides TRANSCRIPT_UPDATED, AGENT_STATE_CHANGED, AGENT_METRICS, completed-turn, error and SAL events where reported. Normalize toolkit local uid zero before display and retain interrupted turns. Preserve missing metric fields and data provenance; Inspector outcomes are manually confirmed.
 
 ## Environment Contract
 
-Required:
+Local Next.js reads `.env.local` from tracked `env.local.example`. Hosted/Docker servers inject runtime values; the public App ID must also be supplied to the browser build.
 
-- `NEXT_PUBLIC_AGORA_APP_ID`
-- `NEXT_AGORA_APP_CERTIFICATE`
+| Variable | Required | Owner / exposure | Purpose |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_AGORA_APP_ID` | Required | Next.js build and runtime; public | App ID from the selected Agora project; Docker must receive the same value at build and runtime. |
+| `NEXT_AGORA_APP_CERTIFICATE` | Required | Next.js server runtime; secret | Signs RTC/RTM credentials and authenticates managed Agent operations; never a build argument. |
+| `TOP_TEN_SCENARIO_TOOL_BASE_URL` | Optional | Next.js server; non-secret | This same app's public HTTPS origin. Omit for default conversation; enabling tools requires actual cloud reachability. |
+| `TOP_TEN_DATA_DIR` | Optional | Next.js server; local path | Optional writable persistent directory for survey results; defaults to .scenario-data. |
 
-This is the complete base `.env.local` contract. The optional BYOK route and provider snippets use additional variables only when a developer explicitly enables them.
+## External Services
 
-## Test Coverage for Interfaces
-
-- `scripts/verify-api-contracts.ts` asserts token generation, input validation, env failures, and SSE framing cases.
-
-## Shared Client-Side Interfaces
-
-From `types/conversation.ts` (high-use):
-
-- `AgoraTokenData`: token bootstrap payload consumed by `LandingPage`.
-- `AgoraRenewalTokens`: renewal callback result (`rtcToken`, `rtmToken`).
-- `ConversationComponentProps`: runtime dependencies for in-call component.
-
-## Interface Invariants
-
-- Token payload must always include `token`, `uid`, `channel`.
-- Invite route requires both `requester_id` and `channel_name`.
-- Stop route requires `agent_id`; missing should never be tolerated silently.
-- Token route should always return UID as string for downstream compatibility.
-
-## Event Interface Notes
-
-- Metrics stream entries are append-only in component state, capped to recent window.
-- Connection issue records carry `source`, `agentUserId`, code/message, timestamp.
-- SAL and signaling fallback payloads are parsed defensively because message schema can vary.
-
-## Backward Compatibility Guidance
-
-- If route response shape changes, update both client consumers and contract tests in same change.
-- If adding fields, keep existing fields stable to avoid quickstart consumer breakage.
-- Reflect interface changes in README and L1 docs to keep sample copyable.
+The server uses agora-agents with the configured managed STT/LLM/TTS providers. The browser uses RTC, Signaling and the Agent Client Toolkit. Optional business tools call this same app over public HTTPS, and their returned success is required before reporting an action complete. Provider BYOK blocks are opt-in, server-only and require separate verification.
 
 ## Related Deep Dives
 
-- [conversation_lifecycle.md](L2/conversation_lifecycle.md) — How route contracts are used in sequence.
-- [transcript_pipeline.md](L2/transcript_pipeline.md) — Event-level contract mapping.
-
-## Scenario 03 result contract
-
-POST `/api/scenarios/03-customer-survey/results`: `{ session_id, answers, status }`, where status is completed or abandoned. Completed needs issue_resolution (resolved/partially_resolved/unresolved) and satisfaction_rating (integer 1–5). Optional answers: dissatisfaction_reason (wait_time/resolution/communication/other), main_issue, improvement_suggestion, willing_to_follow_up, additional_comments and the existing satisfaction text. Unanswered fields stay absent. Return `{ result, duplicate }`, 201 on first save, 200 on duplicate, 400 on invalid data, 500 on storage failure. First record wins. Server derives needs_follow_up from non-resolved outcomes, ratings 1–2 or explicit contact willingness; consent is stored separately. Timestamp is server-generated.
-
-Optional TOP_TEN_SCENARIO_TOOL_BASE_URL registers the cloud save tool at this app's public HTTPS origin. TOP_TEN_DATA_DIR selects writable durable storage. The invite prompt supplies channel_name as session_id; no new client startup fields are required. No tool URL means no Agent persistence. End survey only stops the session.
-
-
-## Local conversation and optional tools
-
-Default conversations use the existing questionnaire to collect and verbally review feedback. Without tools, no answers are saved and no follow-up is scheduled. A configured public HTTPS tool origin enables the existing save_survey_result contract.
-
-TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public HTTPS endpoint enables tools; malformed, HTTP, localhost and local/private origins leave tools disabled. URL validation does not prove network reachability. No tunnel, knowledge base or database is needed for the default conversation. Local checks do not establish live speech or cloud callback acceptance.
+- [Tokens](L2/token_model.md)
+- [Transcript pipeline](L2/transcript_pipeline.md)
+- [Agent configuration](L2/invite_agent_config.md)
