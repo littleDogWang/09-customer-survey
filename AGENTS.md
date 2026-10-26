@@ -2,10 +2,6 @@
 
 This guide is for coding agents making changes in `03-customer-survey`.
 
-## Shared scenario UI requirements
-
-The 2026-10-21 UI alignment supersedes the earlier starter-only exception. Use the actual vendored scenario-01 components and theme: scenario-specific entry Dialog, persistent scenario identity, real ConversationPanel and Glass VoiceDock, AgentSignal, Inspector and Build dialogs. Preserve all scenario business operations and authoritative results.
-
 
 ## U.S. scenario content
 
@@ -41,7 +37,7 @@ The sections below (Start Here, Patterns, Anti-Patterns, etc.) remain the canoni
 - Client RTC: `agora-rtc-react` hooks over `agora-rtc-sdk-ng`
 - Messaging: `agora-rtm` for transcripts, agent state, metrics, and error events
 - Toolkit core: `agora-agent-client-toolkit` for `AgoraVoiceAI`, transcript helpers, and turn status
-- UI components: vendored agent-ui source, scenario-01 theme, application-owned activity canvas; see styles/agent-ui/PROVENANCE.md.
+- UI components: vendored agent-ui source, scenario-01 theme, application-owned activity canvas; see THIRD_PARTY_NOTICES.md.
 - Server SDK: `agora-agents` for managed agent session startup
 - API routes: token generation, agent invite, chat, and stop routes live in `app/api`
 - Default agent config: Agora-managed STT, LLM and TTS. `.env.local` requires the two Agora project credentials; optional scenario variables are documented in README.
@@ -246,4 +242,4 @@ TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public
 
 ## Scenario 01 UI alignment (2026-10-21)
 
-`ScenarioShell` and `useScenarioUi` compose the entry, persistent identity, activity workspace, Inspector and Build panels around existing session bootstrap. `lib/presentation.ts` loads scenario-specific content. `ConversationComponent` reports actual activity/inspection events and uses the adopted transcript and Glass controls. Business views remain scenario-owned below the voice workspace. Tailwind 4/PostCSS, theme recipes and MiSans match scenario 01. `lib/runtime-profile.ts` displays the non-secret configured pipeline; keep it aligned with the invite route. Never treat browser fixtures as live RTC/tool acceptance.
+The local `LandingPage` UI helpers compose the entry, persistent identity, activity workspace, Inspector and Build panels around existing session bootstrap. `lib/presentation.ts` loads scenario-specific content. `ConversationComponent` reports actual activity/inspection events and uses the adopted transcript and Glass controls. Business views remain scenario-owned below the voice workspace. Tailwind 4/PostCSS, theme recipes and MiSans match scenario 01. `lib/runtime-profile.ts` displays the non-secret configured pipeline; keep it aligned with the invite route. Never treat browser fixtures as live RTC/tool acceptance.
