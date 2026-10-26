@@ -56,7 +56,8 @@ Use Node.js 22+ and pnpm 9.15.9. The tracked example is `env.local.example`; loc
 
 - UI and RTC/RTM client lifecycle live in `components`.
 - Browser-facing API routes live in `app/api`.
-- Shared constants and transcript normalization live in `lib`.
+- Constants, Agent config/tools, presentation and business modules live in `lib`; this repo owns its complete implementation.
+- Types live in `types`; business documentation lives in `docs/scenario`. Do not reintroduce a root multi-scenario registry.
 - If a workflow, request contract, or ownership boundary changes, update `README.md`, `AGENTS.md`, and the relevant `docs/ai/` files in the same change.
 
 ## Key Files
@@ -231,7 +232,7 @@ The generator and tester live in the [AgoraIO-Community/ai-devkit](https://githu
 
 - Scenario identity: Service Feedback Survey, 03; the voice persona is Service Feedback Assistant.
 - The prompt asks resolution, 1–5 CSAT, relevant reason, optional improvement, explicit contact consent and confirmed review. It skips answers already given and offers abandoned persistence on spoken early exit with consent.
-- `scenarios/tool-contracts.ts` provides the typed save_survey_result tool only with TOP_TEN_SCENARIO_TOOL_BASE_URL. The invite route supplies the RTC channel as session_id.
+- `lib/agent-tools.ts` provides the typed save_survey_result tool only with TOP_TEN_SCENARIO_TOOL_BASE_URL. The invite route supplies the RTC channel as session_id.
 - The results API validates fields and derives needs_follow_up independently of contact consent. Local JSON storage errors return 500. End survey does not save unsubmitted answers.
 - UI uses the scenario-01 components and Tailwind 4 theme. Preserve RTC/RTM ownership invariants.
 - `pnpm run verify` includes verify:scenario; real voice and managed tool execution remain separate acceptance steps.
@@ -245,4 +246,4 @@ TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public
 
 ## Scenario 01 UI alignment (2026-10-21)
 
-`ScenarioShell` and `useScenarioUi` compose the entry, persistent identity, activity workspace, Inspector and Build panels around existing session bootstrap. `scenarios/presentation.ts` loads scenario-specific content. `ConversationComponent` reports actual activity/inspection events and uses the adopted transcript and Glass controls. Business views remain scenario-owned below the voice workspace. Tailwind 4/PostCSS, theme recipes and MiSans match scenario 01. `scenarios/runtime-profile.ts` displays the non-secret configured pipeline; keep it aligned with the invite route. Never treat browser fixtures as live RTC/tool acceptance.
+`ScenarioShell` and `useScenarioUi` compose the entry, persistent identity, activity workspace, Inspector and Build panels around existing session bootstrap. `lib/presentation.ts` loads scenario-specific content. `ConversationComponent` reports actual activity/inspection events and uses the adopted transcript and Glass controls. Business views remain scenario-owned below the voice workspace. Tailwind 4/PostCSS, theme recipes and MiSans match scenario 01. `lib/runtime-profile.ts` displays the non-secret configured pipeline; keep it aligned with the invite route. Never treat browser fixtures as live RTC/tool acceptance.

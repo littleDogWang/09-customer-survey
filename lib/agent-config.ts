@@ -1,4 +1,4 @@
-import type { ScenarioConfig } from '../types';
+import type { ScenarioConfig } from '../types/agent-config';
 
 export const config: ScenarioConfig = {
   id: '03-customer-survey',
@@ -16,3 +16,20 @@ If the user verbally asks to stop early, do not continue the questionnaire: brie
   guardrails: `Do not pressure the user, infer sentiment, invent answers or treat skipped answers as false or zero. Resolution and rating are needed for completed status; if either is skipped, preserve the partial result as abandoned. Optional reason, improvement and contact questions may be skipped. Keep answers concise and faithful to the user's words. A follow-up flag is a record of need, not contact permission or a scheduled action. Do not offer troubleshooting, refunds, ticket updates, transfers, outbound calls or CRM writes. If asked to fix the issue, explain this interview only records feedback, then ask whether to continue. If no save tool is available, explain that answers cannot be saved in this session; never imply persistence. If saving fails, say so and ask before retrying with the SAME session_id. Do not read internal identifiers or field names aloud.`,
   greeting: 'Hi, I’m the Service Feedback Assistant. I’d like to hear about your recent support experience: whether your issue was resolved and what we could improve. It takes about two minutes. Would you like to begin?',
 };
+
+function formatScenarioPrompt(config: ScenarioConfig): string {
+  return `You are the ${config.role}
+
+# Goal and conversation flow
+${config.workflow}
+
+# Safety and truthfulness rules
+${config.guardrails}
+
+# Demo boundary
+This browser demo only has the capabilities described in this scenario. Never claim that an external action, booking, update, payment, transfer, or record write succeeded unless a configured tool returned that result.
+${config.fixtureSummary ? `\n# Demo data\n${config.fixtureSummary}` : ''}`;
+}
+
+export function getScenarioConfig(): ScenarioConfig { return config; }
+export function getScenarioPrompt(_scenarioId?: string): string { return formatScenarioPrompt(config); }

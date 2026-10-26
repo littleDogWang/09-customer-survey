@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { getScenarioConfig, getScenarioPrompt } from '../scenarios';
-import { getScenarioTools } from '../scenarios/tool-contracts';
+import { getScenarioConfig, getScenarioPrompt } from '../lib/agent-config';
+import { getScenarioTools } from '../lib/agent-tools';
 
 async function main() {
   assert.equal(getScenarioConfig().id, '03-customer-survey');

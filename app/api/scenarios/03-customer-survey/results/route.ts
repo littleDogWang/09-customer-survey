@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import {
   saveSurveyResult,
   type CustomerSurveyResult,
-} from '@/scenarios/03-customer-survey/results';
+} from '@/lib/customer-survey/results';
 
 function isAnswers(value: unknown): value is CustomerSurveyResult['answers'] {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;

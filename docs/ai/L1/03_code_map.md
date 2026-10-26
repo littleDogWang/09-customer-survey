@@ -7,9 +7,10 @@
 ```text
 app/                    Next.js pages and API routes
 components/             voice lifecycle, transcript and scenario UI
-scenarios/03-customer-survey/         business instructions, data and rules
-scenarios/              selected prompt and optional tool contracts
-lib/                    token constants and transcript/evidence helpers
+lib/customer-survey/         business data and rules
+lib/                    Agent config, tools, presentation and lifecycle helpers
+types/                  application and Agent/presentation contracts
+docs/scenario/          business guide, design and acceptance cases
 scripts/                environment, scenario and delivery verification
 docs/ai/L1/L2/          deeper lifecycle and integration guidance
 ```
@@ -21,11 +22,10 @@ docs/ai/L1/L2/          deeper lifecycle and integration guidance
 - `app/api/stop-conversation/route.ts`: Agent stop.
 - `components/LandingPage.tsx`: browser bootstrap, RTM, token renewal and end.
 - `components/ConversationComponent.tsx`: RTC/toolkit, transcript and activity/evidence events.
-- `scenarios/index.ts`: selected scenario prompt.
-- `scenarios/tool-contracts.ts`: tool schemas, origin validation and call-bound paths.
-- `scenarios/03-customer-survey/config.ts`: Interview and consent.
-- `scenarios/03-customer-survey/results.ts`: Result schema and persistence.
-- `scenarios/03-customer-survey/presentation.ts`: Presentation.
+- `lib/agent-tools.ts`: tool schemas, origin validation and call-bound paths.
+- `lib/agent-config.ts`: Interview and consent.
+- `lib/customer-survey/results.ts`: Result schema and persistence.
+- `lib/presentation.ts`: Presentation.
 - `package.json`: pinned pnpm and canonical verification.
 - `Dockerfile`, `scripts/verify-docker.mjs`: actual image and container smoke contract.
 - `scripts/verify-template.mjs`: required paths, identity, link and command consistency.
