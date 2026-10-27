@@ -58,7 +58,3 @@ export function saveSurveyResult(result: CustomerSurveyResult): {
   writeResults(results);
   return { result, duplicate: false };
 }
-
-export function getSurveyResult(sessionId: string): CustomerSurveyResult | null {
-  return readResults().get(sessionId) ?? null;
-}
