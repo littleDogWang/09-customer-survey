@@ -1,6 +1,6 @@
 # Agent Development Guide
 
-This guide is for coding agents making changes in `03-customer-survey`.
+This guide is for coding agents making changes in `09-customer-survey`.
 
 
 ## U.S. scenario content
@@ -224,7 +224,7 @@ Before finishing a change:
 
 The generator and tester live in the [AgoraIO-Community/ai-devkit](https://github.com/AgoraIO-Community/ai-devkit) skill set. See the [progressive disclosure standard](https://github.com/AgoraIO-Community/ai-devkit/blob/main/docs/progressive-disclosure-standard.md) for the full specification.
 
-## Scenario 03 service feedback contract
+## Scenario 09 service feedback contract
 
 - Scenario identity: Service Feedback Survey, 03; the voice persona is Service Feedback Assistant.
 - The prompt asks resolution, 1–5 CSAT, relevant reason, optional improvement, explicit contact consent and confirmed review. It skips answers already given and offers abandoned persistence on spoken early exit with consent.

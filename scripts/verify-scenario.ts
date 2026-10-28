@@ -6,17 +6,17 @@ import { getScenarioConfig, getScenarioPrompt } from '../lib/agent-config';
 import { getScenarioTools } from '../lib/agent-tools';
 
 async function main() {
-  assert.equal(getScenarioConfig().id, '03-customer-survey');
+  assert.equal(getScenarioConfig().id, '09-customer-survey');
   assert.ok(getScenarioPrompt().includes('# Goal and conversation flow'));
-  assert.equal(getScenarioTools('03-customer-survey', '').length, 0);
-  const tools = getScenarioTools('03-customer-survey', 'https://example.com/');
-  assert.equal(tools[0].server?.url, 'https://example.com/api/scenarios/03-customer-survey/results');
+  assert.equal(getScenarioTools('09-customer-survey', '').length, 0);
+  const tools = getScenarioTools('09-customer-survey', 'https://example.com/');
+  assert.equal(tools[0].server?.url, 'https://example.com/api/scenarios/09-customer-survey/results');
 
   const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'service-feedback-'));
   process.env.TOP_TEN_DATA_DIR = dataDir;
   try {
-    const { POST } = await import('../app/api/scenarios/03-customer-survey/results/route');
-    const submit = (body: unknown) => POST(new Request('http://localhost/api/scenarios/03-customer-survey/results', {
+    const { POST } = await import('../app/api/scenarios/09-customer-survey/results/route');
+    const submit = (body: unknown) => POST(new Request('http://localhost/api/scenarios/09-customer-survey/results', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
     }));
     const unhappy = {
@@ -75,7 +75,7 @@ async function main() {
     }
     assert.equal((await POST(new Request('http://localhost/results', { method: 'POST', body: '{' }))).status, 400);
 
-    const resultsFile = path.join(dataDir, '03-customer-survey', 'results.json');
+    const resultsFile = path.join(dataDir, '09-customer-survey', 'results.json');
     assert.equal(JSON.parse(fs.readFileSync(resultsFile, 'utf8')).length, 6);
     fs.writeFileSync(resultsFile, '{broken');
     assert.equal((await submit({ session_id: 'corrupt-store', answers: {}, status: 'abandoned' })).status, 500);
@@ -83,7 +83,7 @@ async function main() {
     fs.rmSync(resultsFile);
     fs.mkdirSync(resultsFile);
     assert.equal((await submit({ session_id: 'blocked-store', answers: {}, status: 'abandoned' })).status, 500);
-    console.log('Scenario 03 contracts passed: branching answer fields, validation, consent, derived follow-up, partial results, deduplication and storage failures.');
+    console.log('Scenario 09 contracts passed: branching answer fields, validation, consent, derived follow-up, partial results, deduplication and storage failures.');
   } finally {
     fs.rmSync(dataDir, { recursive: true, force: true });
     delete process.env.TOP_TEN_DATA_DIR;

@@ -12,7 +12,7 @@ The user start action creates any necessary scenario session, fetches the combin
 
 The invite body contains `requester_id` and `channel_name`; the server supplies the channel as survey `session_id`.
 
-`save_survey_result` calls `POST /api/scenarios/03-customer-survey/results` with `session_id`, `answers` and `status`. The invite supplies the RTC channel as the survey session ID. The first saved record for that session wins; retries return the existing result. `results.ts` derives the storage path; server route validation determines follow-up need.
+`save_survey_result` calls `POST /api/scenarios/09-customer-survey/results` with `session_id`, `answers` and `status`. The invite supplies the RTC channel as the survey session ID. The first saved record for that session wins; retries return the existing result. `results.ts` derives the storage path; server route validation determines follow-up need.
 
 ## Ownership Boundaries
 

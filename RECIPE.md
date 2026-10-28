@@ -2,7 +2,7 @@
 
 Turn a short post-support conversation into confirmed, structured feedback.
 
-[Try locally](#2-try-the-demo) · [Source on GitHub](https://github.com/littleDogWang/03-customer-survey) · [Build with AI](#build-with-ai)
+[Try locally](#2-try-the-demo) · [Source on GitHub](https://github.com/littleDogWang/09-customer-survey) · [Build with AI](#build-with-ai)
 
 TypeScript · Web · Next.js 16 / React 19 · Agora Conversational AI
 
@@ -86,8 +86,8 @@ Leave `TOP_TEN_SCENARIO_TOOL_BASE_URL` unset for the default conversation. To en
 From a terminal, clone this scenario rather than the generic starter:
 
 ```bash
-git clone https://github.com/littleDogWang/03-customer-survey.git
-cd 03-customer-survey
+git clone https://github.com/littleDogWang/09-customer-survey.git
+cd 09-customer-survey
 pnpm install --frozen-lockfile
 cp env.local.example .env.local
 ```
@@ -113,7 +113,7 @@ Open [http://localhost:3000](http://localhost:3000), choose **Start feedback sur
 
 ### Tools and result semantics
 
-`save_survey_result` calls `POST /api/scenarios/03-customer-survey/results` with `session_id`, `answers` and `status`. The invite supplies the RTC channel as the survey session ID. The first saved record for that session wins; retries return the existing result. `results.ts` derives the storage path; server route validation determines follow-up need.
+`save_survey_result` calls `POST /api/scenarios/09-customer-survey/results` with `session_id`, `answers` and `status`. The invite supplies the RTC channel as the survey session ID. The first saved record for that session wins; retries return the existing result. `results.ts` derives the storage path; server route validation determines follow-up need.
 
 The invite body contains `requester_id` and `channel_name`; the server supplies the channel as survey `session_id`. The supplied browser already handles this startup sequence. See [the scenario guide](docs/scenario/README.md) for additional behavior and contracts.
 
@@ -144,7 +144,7 @@ After cloning this repository, paste the following into your coding agent from y
 ```text
 Implement the Service Feedback Survey recipe in my application.
 
-Read RECIPE.md in the cloned 03-customer-survey repository first, then inspect
+Read RECIPE.md in the cloned 09-customer-survey repository first, then inspect
 its scenario modules, tool contracts and invite route. Read docs/ai/RECIPE.md
 and AGENTS.md in that repository for integration constraints.
 
@@ -172,8 +172,8 @@ These commands describe the repository's supported scripts; they do not attest t
 ### Docker deployment
 
 ```bash
-docker build --build-arg NEXT_PUBLIC_AGORA_APP_ID=YOUR_AGORA_APP_ID -t 03-customer-survey:local .
-docker run --rm -p 3000:3000 --env-file .env.local --mount source=03-customer-survey-data,target=/app/.scenario-data 03-customer-survey:local
+docker build --build-arg NEXT_PUBLIC_AGORA_APP_ID=YOUR_AGORA_APP_ID -t 09-customer-survey:local .
+docker run --rm -p 3000:3000 --env-file .env.local --mount source=09-customer-survey-data,target=/app/.scenario-data 09-customer-survey:local
 ```
 
 Replace `YOUR_AGORA_APP_ID` with the public App ID used in `.env.local`. Next.js embeds that identifier in the browser bundle, so changing projects requires rebuilding the image. The App Certificate is supplied only at container runtime. The named volume preserves the non-root-owned `.scenario-data` directory. Leave custom host storage variables unset inside Docker or map them to the mounted directory; a host absolute path is not automatically mounted.

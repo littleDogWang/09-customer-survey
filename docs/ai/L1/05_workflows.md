@@ -5,8 +5,8 @@
 ## First Success
 
 ```bash
-git clone https://github.com/littleDogWang/03-customer-survey.git
-cd 03-customer-survey
+git clone https://github.com/littleDogWang/09-customer-survey.git
+cd 09-customer-survey
 pnpm install --frozen-lockfile
 cp env.local.example .env.local
 ```

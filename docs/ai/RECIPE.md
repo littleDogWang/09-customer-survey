@@ -91,7 +91,7 @@ The upstream baseline is [AgoraIO-Conversational-AI/agent-quickstart-nextjs](htt
 - `GET /api/generate-agora-token` returns `{ token, uid, channel }`.
 - `POST /api/invite-agent` starts the scenario Agent. The invite body contains `requester_id` and `channel_name`; the server supplies the channel as survey `session_id`.
 - `POST /api/stop-conversation` accepts `{ agent_id }`; already-stopping states are idempotent.
-- `save_survey_result` calls `POST /api/scenarios/03-customer-survey/results` with `session_id`, `answers` and `status`. The invite supplies the RTC channel as the survey session ID. The first saved record for that session wins; retries return the existing result. `results.ts` derives the storage path; server route validation determines follow-up need.
+- `save_survey_result` calls `POST /api/scenarios/09-customer-survey/results` with `session_id`, `answers` and `status`. The invite supplies the RTC channel as the survey session ID. The first saved record for that session wins; retries return the existing result. `results.ts` derives the storage path; server route validation determines follow-up need.
 - Local environment: `env.local.example` → `.env.local`; required keys are the public App ID and server-only App Certificate. [All variables](L1/01_setup.md) include optional business-tool/storage paths.
 - Node.js 22+, pnpm 9.15.9; canonical checks are `pnpm run verify`. `pnpm run verify:docker` is a separate image/startup/scenario-route check.
 - Use one Node process and a writable persistent directory for saved results. Set `TOP_TEN_DATA_DIR` to that directory; the default is `.scenario-data`. Ephemeral serverless disk does not provide durable survey storage. For multi-instance use, replace the local JSON store with shared storage.
@@ -102,7 +102,7 @@ Component layout, presentation copy, model/provider defaults, UI diagnostics and
 
 ## Consumer Onboarding Recipe
 
-1. Clone `https://github.com/littleDogWang/03-customer-survey.git` and change into `03-customer-survey`.
+1. Clone `https://github.com/littleDogWang/09-customer-survey.git` and change into `09-customer-survey`.
 2. With Node.js 22+ and pnpm 9.15.9, run `pnpm install --frozen-lockfile`.
 3. Copy `env.local.example` to `.env.local` only on a clean clone; fill the two Agora project credentials. Alternatively use the ready CLI's template-aware `agora quickstart env write . --template nextjs --project <your-project> --json`.
 4. Run `pnpm run doctor`, then `pnpm run dev`. Open http://localhost:3000 and choose the scenario start action.

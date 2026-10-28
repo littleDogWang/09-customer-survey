@@ -47,7 +47,7 @@ export function getScenarioTools(_scenarioId: string, baseUrl = process.env.TOP_
     },
     server: {
       method: 'POST',
-      url: `${origin}/api/scenarios/03-customer-survey/results`,
+      url: `${origin}/api/scenarios/09-customer-survey/results`,
       body: { session_id: '{{args.session_id}}', answers: '{{args.answers}}', status: '{{args.status}}' },
     },
   }];

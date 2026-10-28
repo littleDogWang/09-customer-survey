@@ -9,7 +9,7 @@
 - `POST /api/stop-conversation`: requires agent_id; already-stopping/not-found handling is idempotent.
 - `POST /api/chat/completions`: optional custom-LLM proxy, not used by the default managed pipeline.
 
-`save_survey_result` calls `POST /api/scenarios/03-customer-survey/results` with `session_id`, `answers` and `status`. The invite supplies the RTC channel as the survey session ID. The first saved record for that session wins; retries return the existing result. `results.ts` derives the storage path; server route validation determines follow-up need.
+`save_survey_result` calls `POST /api/scenarios/09-customer-survey/results` with `session_id`, `answers` and `status`. The invite supplies the RTC channel as the survey session ID. The first saved record for that session wins; retries return the existing result. `results.ts` derives the storage path; server route validation determines follow-up need.
 
 The questionnaire and verbal review work without business tools. Answers are not saved and no follow-up is scheduled.
 

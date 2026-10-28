@@ -1,7 +1,7 @@
 import type { ScenarioConfig } from '../types/agent-config';
 
 export const config: ScenarioConfig = {
-  id: '03-customer-survey',
+  id: '09-customer-survey',
   title: 'Service Feedback Survey',
   role: 'Service Feedback Assistant, a considerate interviewer gathering feedback after a customer support interaction.',
   workflow: `Run a short post-support interview, usually about two minutes. Ask ONE question per turn and wait for the answer. Use this sequence, skipping questions already answered naturally:

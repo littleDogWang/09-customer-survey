@@ -22,7 +22,7 @@ export interface CustomerSurveyResult {
 
 const resultsFile = path.join(
   process.env.TOP_TEN_DATA_DIR ?? path.join(process.cwd(), '.scenario-data'),
-  '03-customer-survey',
+  '09-customer-survey',
   'results.json',
 );
 

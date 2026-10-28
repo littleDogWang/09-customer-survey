@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 
-const name = '03-customer-survey-smoke-' + randomUUID().slice(0, 8);
-const image = process.env.DOCKER_IMAGE || 'agora-scenario/03-customer-survey:local';
+const name = '09-customer-survey-smoke-' + randomUUID().slice(0, 8);
+const image = process.env.DOCKER_IMAGE || 'agora-scenario/09-customer-survey:local';
 const appId = '0123456789abcdef0123456789abcdef';
 const certificate = 'fedcba9876543210fedcba9876543210';
 const check = {
-  "path": "/api/scenarios/03-customer-survey/results",
+  "path": "/api/scenarios/09-customer-survey/results",
   "method": "POST",
   "body": {
     "session_id": "docker-smoke",
@@ -56,7 +56,7 @@ try {
   const body = await response.text();
   assert.equal(response.status, check.status, body);
   assert.ok(JSON.parse(body), 'Expected a JSON scenario response.');
-  console.log('Docker image, HTTP startup and scenario route passed: 03-customer-survey. No live Agora call was made.');
+  console.log('Docker image, HTTP startup and scenario route passed: 09-customer-survey. No live Agora call was made.');
 } catch (error) {
   if (started) console.error(docker(['logs', name]));
   throw error;

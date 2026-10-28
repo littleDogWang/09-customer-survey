@@ -1,5 +1,5 @@
 {
-  "name": "03-customer-survey",
+  "name": "09-customer-survey",
   "version": "0.1.0",
   "description": "Turn a short post-support conversation into confirmed, structured feedback.",
   "private": true,
