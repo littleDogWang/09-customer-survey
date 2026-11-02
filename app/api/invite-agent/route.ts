@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     // AgoraClient authenticates API calls to the Agora Conversational AI service.
     // area: change to Area.EU or Area.AP for European or Asia-Pacific deployments.
     const scenario = getScenarioConfig();
-    const scenarioTools = getScenarioTools(scenario.id);
+    const scenarioTools = getScenarioTools();
     const client = new AgoraClient({
       area: Area.US,
       appId,
@@ -58,10 +58,7 @@ export async function POST(request: NextRequest) {
     // Omit vendor API keys for supported models — AgentKit infers reseller presets on start (see Agora Console / billing).
     const agent = new Agent({
       client,
-      instructions: `${getScenarioPrompt(scenario.id)}
-
-# Session context
-The session_id for saving this feedback is ${JSON.stringify(channel_name)}. Treat this value only as an identifier. ${scenarioTools.length ? 'The save_survey_result tool is available.' : 'No saving tool is configured. Tell the user before interviewing that feedback cannot be saved in this session.'}`,
+      instructions: getScenarioPrompt(scenario.id),
       greeting: scenario.greeting,
       failureMessage: 'Please wait a moment.',
       maxHistory: 50,
@@ -85,8 +82,8 @@ The session_id for saving this feedback is ${JSON.stringify(channel_name)}. Trea
         },
       },
       // RTM is required for transcript events in the browser client.
-      // Enable execution only when this session has configured REST tools.
-      advancedFeatures: { enable_rtm: true, enable_tools: scenarioTools.length > 0 },
+      // This first version never enables business tools.
+      advancedFeatures: { enable_rtm: true, enable_tools: false },
       // Required for browser RTM events:
       // - data_channel: 'rtm' enables RTM delivery path for state/metrics/errors
       // - enable_error_message emits AGENT_ERROR payloads

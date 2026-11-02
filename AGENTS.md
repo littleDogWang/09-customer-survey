@@ -11,6 +11,14 @@ Use a United States setting for fictional business examples, UI copy, Agent cont
 
 Use English for repository content, including documentation, code comments, UI copy and examples. Keep future additions and edits free of Chinese text.
 
+
+## First-version scope
+
+Discuss a support experience in a short interview and hear a verbal summary.
+
+This first version is conversation-only. No business data lookup, external tools, database, record writes, saved results, or cross-session business history are available. Keep user-provided details only in the current conversation. Never claim an order, appointment, registration, feedback submission, callback, payment, shipment or other external action was created, saved or completed. Offer a verbal summary and explain the appropriate human next step instead. Do not request passwords, verification codes, payment details or unnecessary personal identifiers.
+
+
 ## How to Load
 
 This repository uses progressive disclosure documentation. Docs live under `docs/ai/` in three levels.
@@ -40,19 +48,19 @@ The sections below (Start Here, Patterns, Anti-Patterns, etc.) remain the canoni
 - UI components: vendored agent-ui source, scenario-01 theme, application-owned activity canvas; see THIRD_PARTY_NOTICES.md.
 - Server SDK: `agora-agents` for managed agent session startup
 - API routes: token generation, agent invite, chat, and stop routes live in `app/api`
-- Default agent config: Agora-managed STT, LLM and TTS. `.env.local` requires the two Agora project credentials; optional scenario variables are documented in README.
+- Default agent config: Agora-managed STT, LLM and TTS. `.env.local` requires the two Agora project credentials; no business callback or storage configuration is used.
 
 ## Supported Modes
 
-Local development runs one Next.js process at http://localhost:3000 using `.env.local`. Native production uses `pnpm run build` then `pnpm run start`. Docker runs the same app as non-root UID 1001 on port 3000, without a reverse proxy inside the image. Use one Node process and a writable persistent directory for saved results. Set `TOP_TEN_DATA_DIR` to that directory; the default is `.scenario-data`. Ephemeral serverless disk does not provide durable survey storage. For multi-instance use, replace the local JSON store with shared storage.
+The browser uses Agora RTC for audio and RTM for transcript and Agent events. Next.js only signs credentials and starts/stops the managed Agent. No business session, data API, local file store or persistent application database is required. Native Node.js, Docker and a Next.js-compatible serverless deployment use the same conversation flow. Actual hosted voice acceptance remains a separate check.
 
-Use Node.js 22+ and pnpm 9.15.9. The tracked example is `env.local.example`; local Next.js uses `.env.local`. Docker embeds the public App ID at build time, accepts the certificate only at runtime, and keeps the writable data directory owned by UID 1001. Run `pnpm run verify:docker` separately from `pnpm run verify`; see [README deployment](README.md#deployment).
+Use Node.js 22+ and pnpm 9.15.9. Copy env.local.example to .env.local only when absent. Supply the public App ID at build and runtime and keep the App Certificate server-only. Run pnpm run verify:docker separately for container acceptance.
 
 ## Routing / Ownership
 
 - UI and RTC/RTM client lifecycle live in `components`.
 - Browser-facing API routes live in `app/api`.
-- Constants, Agent config/tools, presentation and business modules live in `lib`; this repo owns its complete implementation.
+- Constants, Agent configuration, empty tools, presentation and static reference material live in `lib`; this repo owns its complete implementation.
 - Types live in `types`; business documentation lives in `docs/scenario`. Do not reintroduce a root multi-scenario registry.
 - If a workflow, request contract, or ownership boundary changes, update `README.md`, `AGENTS.md`, and the relevant `docs/ai/` files in the same change.
 
@@ -123,7 +131,7 @@ useEffect(() => {
 ### Tokens and Styling
 
 - RTM token access must come from `RtcTokenBuilder.buildTokenWithRtm`; a standard RTC-only token does not grant RTM access.
-- Tailwind 4 uses CSS theme roles and @source in app/globals.css.
+- Tailwind 4 scans UIKit with the @source directive in app/globals.css.
 
 ## Working Rules
 
@@ -224,22 +232,11 @@ Before finishing a change:
 
 The generator and tester live in the [AgoraIO-Community/ai-devkit](https://github.com/AgoraIO-Community/ai-devkit) skill set. See the [progressive disclosure standard](https://github.com/AgoraIO-Community/ai-devkit/blob/main/docs/progressive-disclosure-standard.md) for the full specification.
 
-## Scenario 09 service feedback contract
 
-- Scenario identity: Service Feedback Survey, 03; the voice persona is Service Feedback Assistant.
-- The prompt asks resolution, 1–5 CSAT, relevant reason, optional improvement, explicit contact consent and confirmed review. It skips answers already given and offers abandoned persistence on spoken early exit with consent.
-- `lib/agent-tools.ts` provides the typed save_survey_result tool only with TOP_TEN_SCENARIO_TOOL_BASE_URL. The invite route supplies the RTC channel as session_id.
-- The results API validates fields and derives needs_follow_up independently of contact consent. Local JSON storage errors return 500. End survey does not save unsubmitted answers.
-- UI uses the scenario-01 components and Tailwind 4 theme. Preserve RTC/RTM ownership invariants.
-- `pnpm run verify` includes verify:scenario; real voice and managed tool execution remain separate acceptance steps.
+## Conversation-only first version
 
+This first version is conversation-only. No business data lookup, external tools, database, record writes, saved results, or cross-session business history are available. Keep user-provided details only in the current conversation. Never claim an order, appointment, registration, feedback submission, callback, payment, shipment or other external action was created, saved or completed. Offer a verbal summary and explain the appropriate human next step instead. Do not request passwords, verification codes, payment details or unnecessary personal identifiers.
 
-## Local conversation and optional tools
+## Scenario UI alignment
 
-Default conversations use the existing questionnaire to collect and verbally review feedback. Without tools, no answers are saved and no follow-up is scheduled. A configured public HTTPS tool origin enables the existing save_survey_result contract.
-
-TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public HTTPS endpoint enables tools; malformed, HTTP, localhost and local/private origins leave tools disabled. URL validation does not prove network reachability. No tunnel, knowledge base or database is needed for the default conversation. Local checks do not establish live speech or cloud callback acceptance.
-
-## Scenario 01 UI alignment (2026-10-21)
-
-The local `LandingPage` UI helpers compose the entry, persistent identity, activity workspace, Inspector and Build panels around existing session bootstrap. `lib/presentation.ts` loads scenario-specific content. `ConversationComponent` reports actual activity/inspection events and uses the adopted transcript and Glass controls. Business views remain scenario-owned below the voice workspace. Tailwind 4/PostCSS, theme recipes and MiSans match scenario 01. `lib/runtime-profile.ts` displays the non-secret configured pipeline; keep it aligned with the invite route. Never treat browser fixtures as live RTC/tool acceptance.
+The local `LandingPage` UI helpers compose the entry, persistent identity, activity workspace, Inspector and Build panels around existing session bootstrap. `lib/presentation.ts` loads scenario-specific content. `ConversationComponent` reports actual activity/inspection events and uses the adopted transcript and Glass controls. No business forms, saved-result panels or data workbenches are included. Tailwind 4/PostCSS, theme recipes and MiSans match scenario 01. `lib/runtime-profile.ts` displays the non-secret configured pipeline; keep it aligned with the invite route. Never treat browser fixtures as live RTC/tool acceptance.

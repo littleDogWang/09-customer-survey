@@ -1,26 +1,24 @@
-# 03 Service Feedback Survey
+# Service Feedback Survey
 
-A two-minute voice interview about a recent customer support experience: issue resolution, 1–5 service rating, relevant follow-up questions, one improvement and explicit contact consent. The Agent reviews and confirms answers before calling save_survey_result.
+Discuss a support experience in a short interview and hear a verbal summary.
 
-`config.ts` contains the interview and guardrails. `results.ts` and `POST /api/scenarios/09-customer-survey/results` persist submitted results as local JSON, deduplicated by session_id. The server derives needs_follow_up; contact consent remains separate. No CRM or callback action is performed.
+## Conversation flow
 
-Set TOP_TEN_SCENARIO_TOOL_BASE_URL to this app's public HTTPS URL for managed Agent tool calls. TOP_TEN_DATA_DIR optionally chooses a writable durable store. Without a tool URL, saving is unavailable. UI End survey stops the call without saving unsubmitted answers; ask the Agent to review/save before ending. Transcript display and saved business outcomes remain separate.
+Ask permission for a short conversation about a recent support experience. If the caller has no experience to discuss, let them choose a hypothetical example; never invent one for them. Ask one question at a time: whether the issue was resolved; a service rating from 1 to 5; a relevant reason; and an optional improvement suggestion. Skip answers already provided, clarify an ambiguous rating once, and never convert another scale without asking. Respect skipped questions, refusal, corrections and early exit. Briefly explain that this version only discusses feedback and does not save or submit it. At the caller's request, read back a faithful verbal summary and accept corrections before ending.
 
-See design.md for detailed behavior and acceptance.md for test cases and evidence boundaries.
+## Boundaries
 
+No support case, survey database or feedback submission tool is connected. Keep answers only in this conversation. Do not infer sentiment or consent, invent answers, create completed or abandoned survey records, schedule follow-up, request contact details, or claim feedback was saved, shared or sent. Do not troubleshoot or change the caller's original support case.
 
-## Local conversation and optional tools
+This first version is conversation-only. No business data lookup, external tools, database, record writes, saved results, or cross-session business history are available. Keep user-provided details only in the current conversation. Never claim an order, appointment, registration, feedback submission, callback, payment, shipment or other external action was created, saved or completed. Offer a verbal summary and explain the appropriate human next step instead. Do not request passwords, verification codes, payment details or unnecessary personal identifiers.
 
-Default conversations use the existing questionnaire to collect and verbally review feedback. Without tools, no answers are saved and no follow-up is scheduled. A configured public HTTPS tool origin enables the existing save_survey_result contract.
+## Trying the conversation
 
-TOP_TEN_SCENARIO_TOOL_BASE_URL is optional. Only an explicitly configured public HTTPS endpoint enables tools; malformed, HTTP, localhost and local/private origins leave tools disabled. URL validation does not prove network reachability. No tunnel, knowledge base or database is needed for the default conversation. Local checks do not establish live speech or cloud callback acceptance.
+- My support issue was resolved, but I had to wait a long time.
+- Please summarize my feedback without saving it.
 
-## Source locations
+Ask for a verbal recap before ending. Only the current page retains transcript and diagnostic state; no result, order, appointment, registration or feedback record is saved.
 
-This guide lives in documentation; executable code uses the standalone Next.js
-Quickstart layout. Agent instructions and prompt assembly are in
-[lib/agent-config.ts](../../lib/agent-config.ts), optional tool contracts are in
-[lib/agent-tools.ts](../../lib/agent-tools.ts), and presentation content is in
-[lib/presentation.ts](../../lib/presentation.ts). Business modules and fixtures
-live in [lib/customer-survey/](../../lib/customer-survey/). File basenames in this guide
-refer to these source locations, not to files next to this document.
+## Implementation
+
+Behavior lives in lib/agent-config.ts. The page uses the shared voice lifecycle. lib/agent-tools.ts is empty and all business API routes return HTTP 410. See [acceptance cases](acceptance.md).

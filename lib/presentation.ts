@@ -4,24 +4,24 @@ export type { ScenarioPresentation } from '@/types/presentation';
 export const presentation: ScenarioPresentation = {
   "id": "09-customer-survey",
   "name": "Service Feedback Survey",
-  "purpose": "Resolution, rating and feedback",
+  "purpose": "Scenario voice conversation",
   "headline": [
     "Feedback, by voice."
   ],
-  "summary": "Share whether your support issue was resolved, rate the service and suggest improvements.",
-  "featuresHeading": "Beyond starter",
+  "summary": "Discuss a support experience in a short interview and hear a verbal summary.",
+  "featuresHeading": "In this conversation",
   "features": [
     {
-      "emoji": "✅",
-      "title": "Resolution check"
+      "emoji": "💬",
+      "title": "Short feedback interview"
     },
     {
-      "emoji": "⭐",
-      "title": "1–5 service rating"
+      "emoji": "🎙️",
+      "title": "Respectful follow-up questions"
     },
     {
       "emoji": "📝",
-      "title": "Review before saving"
+      "title": "Verbal feedback recap"
     }
   ],
   "builtWith": [
@@ -30,22 +30,22 @@ export const presentation: ScenarioPresentation = {
     "Next.js"
   ],
   "startLabel": "Start feedback survey",
-  "boundaryShort": "Ask the assistant to review and save. Ending alone does not save unsubmitted answers.",
+  "boundaryShort": "Conversation only. No survey submission, saved answers, support-case updates or follow-up.",
   "outcomes": [
     {
-      "id": "shared",
-      "label": "I shared my feedback"
+      "id": "helpful",
+      "label": "The conversation helped"
     },
     {
-      "id": "incomplete",
-      "label": "I have more to share"
+      "id": "needs-guidance",
+      "label": "I need more guidance"
     }
   ],
   "developer": {
-    "sourceUrl": "https://github.com/AgoraIO-Conversational-AI/agent-quickstart-nextjs",
-    "runCommand": "pnpm install\nagora login\nagora project use <your-project>\nagora project env write .env.local\npnpm dev",
+    "sourceUrl": "https://github.com/littleDogWang/09-customer-survey",
+    "runCommand": "pnpm install --frozen-lockfile\npnpm run doctor\npnpm run dev",
     "skillsCommand": "npx skills add github:AgoraIO/skills",
-    "assistantPrompt": "Use Agora Skills to work in the existing 09-customer-survey scenario checkout. Preserve the working Agora session lifecycle and business contracts. Help me adapt its business data and assistant instructions for my workflow.",
+    "assistantPrompt": "Work in this existing 09-customer-survey voice demo. Preserve Agora RTC/RTM lifecycle and the conversation-only first-version boundary. Adapt the assistant instructions and static public background without adding business tools, records, data APIs or persistence.",
     "docsUrl": "https://docs.agora.io/en/ai/build/build-server-client",
     "sdkUrl": "https://www.npmjs.com/package/agora-agents",
     "consoleUrl": "https://console.agora.io/",
@@ -53,21 +53,19 @@ export const presentation: ScenarioPresentation = {
     "skillsUrl": "https://github.com/AgoraIO/skills",
     "extensionPoints": [
       {
-        "title": "Change assistant instructions",
+        "title": "Change the conversation",
         "path": "lib/agent-config.ts"
       },
       {
         "title": "Choose models and voice",
-        "path": "app/api/invite-agent/route.ts"
+        "path": "lib/runtime-profile.ts"
       },
       {
-        "title": "Adapt scenario UI content",
+        "title": "Adapt scenario UI copy",
         "path": "lib/presentation.ts"
       }
     ]
   }
 };
 
-export function getScenarioPresentation(): ScenarioPresentation {
-  return presentation;
-}
+export function getScenarioPresentation(): ScenarioPresentation { return presentation; }
