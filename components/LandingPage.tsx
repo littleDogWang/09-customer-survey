@@ -6,7 +6,7 @@ import type { AgentSignalSnapshot } from '@/lib/agent-signal';
 import { getScenarioPresentation } from '@/lib/presentation';
 import { ScenarioIdentity } from './ScenarioIdentity';
 import { ConversationWorkspace } from './ConversationWorkspace';
-import { QuickstartPreCallCard, ScenarioEntryDialog } from './QuickstartPreCallCard';
+import { QuickstartPreCallCard } from './QuickstartPreCallCard';
 import { ScenarioInspector } from './ScenarioInspector';
 import { DeveloperGuide } from './DeveloperGuide';
 import { ConversationPanel } from './agent-ui/conversation-panel';
@@ -240,19 +240,17 @@ export default function LandingPage() {
 function useScenarioUi() {
   const [activity, setActivity] = useState<AgentSignalSnapshot>({ state: 'idle', micEnabled: false });
   const [inspection, setInspection] = useState<InspectionSnapshot>(EMPTY_INSPECTION);
-  const [entryOpen, setEntryOpen] = useState(true);
   const [outcome, setOutcome] = useState('');
   const start = useCallback(() => {
     setActivity({ state: 'connecting', micEnabled: false });
     setInspection({ ...EMPTY_INSPECTION, lifecycle: 'starting', startedAt: Date.now() });
     setOutcome('');
-    setEntryOpen(false);
   }, []);
   const end = useCallback(() => {
     setActivity({ state: 'ended', micEnabled: false });
     setInspection(previous => ({ ...previous, lifecycle: 'ended', endedAt: Date.now(), agentState: 'ended', micEnabled: false, transport: 'DISCONNECTED' }));
   }, []);
-  return { activity, setActivity, inspection, setInspection, entryOpen, setEntryOpen, outcome, setOutcome, start, end };
+  return { activity, setActivity, inspection, setInspection, outcome, setOutcome, start, end };
 }
 
 type ScenarioUi = ReturnType<typeof useScenarioUi>;
@@ -293,7 +291,6 @@ function ScenarioShell({ ui, active, loading, error, disabled = false, onStart, 
         )}
       </ConversationWorkspace>
       {business ? <section className="demo-business" aria-label={`${scenario.name} details`}>{business}</section> : null}
-      <ScenarioEntryDialog scenario={scenario} open={ui.entryOpen && !active} onOpenChange={ui.setEntryOpen} isLoading={loading} disabled={disabled} error={error} sessionActive={active} onStart={onStart} />
       <ScenarioInspector scenario={scenario} snapshot={inspection} outcome={ui.outcome} onOutcomeChange={ui.setOutcome} open={inspectorOpen} onOpenChange={setInspectorOpen} />
       <DeveloperGuide scenario={scenario} open={buildOpen} onOpenChange={setBuildOpen} />
     </div>
