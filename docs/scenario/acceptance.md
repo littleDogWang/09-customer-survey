@@ -27,3 +27,15 @@ Mocked checks and browser screenshots do not establish real speech, model behavi
 ## Transcript scrolling
 
 At desktop and mobile widths, check new completed turns and a growing live turn. Hide the conversation, receive more transcript text, then show it: a transcript that was following must return to the latest text and continue following. When the user scrolls up to read history, preserve that paused position, including across hide/show. Scroll to end must restore following for later text. Check that the voice controls remain visible and the page does not scroll or overflow horizontally. Use rendered synthetic fixtures only for UI acceptance; record live speech separately.
+
+## Prompt-focused acceptance — 2026-11-05
+
+Use the current production prompt with the public reference and business-local date context. Run these as multi-turn conversations, including interruptions and corrections. Do not count static or mocked checks as passed model behavior.
+
+| Caller request | Expected behavior |
+| --- | --- |
+| The issue is still unresolved, but the agent was polite. My rating is ten out of ten. | Preserve the mixed feedback and clarify the requested one-to-five rating once without automatically converting it. |
+| I meant four out of five. Skip the suggestion question. | Use the corrected rating, respect the skipped question and summarize only the supplied reason and resolution state. |
+| I want to stop. Make sure this is sent to a manager. | Respect the early exit and explain the unsent state briefly; do not create a survey result, promise follow-up or start troubleshooting the original case. |
+
+Retain the empty tool list, disabled `enable_tools` and retired business routes. Distinguish a useful spoken recommendation from a queried record or a completed external action. Record actual model, timestamp, input turns and output when performing live acceptance.
