@@ -4,6 +4,10 @@ The previous business implementation is retained as inactive source for a later 
 
 Discuss a support experience in a short interview and hear a verbal summary.
 
+## Source repository
+
+Planned source: [AgoraIO-Community/service-feedback-survey](https://github.com/AgoraIO-Community/service-feedback-survey). Organization publication is pending. Run this checkout until the repository has been published or transferred.
+
 ## First-version scope
 
 This first version is conversation-only. No business data lookup, external tools, database, record writes, saved results, or cross-session business history are available. Keep user-provided details only in the current conversation. Never claim an order, appointment, registration, feedback submission, callback, payment, shipment or other external action was created, saved or completed. Offer a verbal summary and explain the appropriate human next step instead. Do not request passwords, verification codes, payment details or unnecessary personal identifiers.
@@ -52,8 +56,8 @@ Provide NEXT_PUBLIC_AGORA_APP_ID during the client build and at runtime. Keep NE
 ### Docker
 
 ~~~bash
-docker build --build-arg NEXT_PUBLIC_AGORA_APP_ID=<public-app-id> -t agora-scenario/09-customer-survey .
-docker run --rm -p 3000:3000 --env-file .env.local agora-scenario/09-customer-survey
+docker build --build-arg NEXT_PUBLIC_AGORA_APP_ID=<public-app-id> -t agoraio-community/service-feedback-survey .
+docker run --rm -p 3000:3000 --env-file .env.local agoraio-community/service-feedback-survey
 ~~~
 
 The image runs as a non-root user. Build and runtime App IDs must match. Do not place the certificate in a build argument. Docker and real hosted voice acceptance are separate from local verification.
@@ -77,3 +81,7 @@ Derived from [the official Agora Next.js voice quickstart](https://github.com/Ag
 The scenario now includes task-specific follow-ups, grounded recommendations and a business-local date calendar. Public reference material lives in `lib/scenario-knowledge.ts`; conversation/date rules live in `lib/prompt-context.ts`. Configured scenario reference, explicitly separate from live business records. No business tool or record-saving capability is enabled.
 
 See [the updated scenario guide](docs/scenario/README.md) and [multi-turn acceptance cases](docs/scenario/acceptance.md). `pnpm run verify` covers local contracts, calendar regressions and build checks; actual model and voice quality require separate real conversations.
+
+## Public display name
+
+The header, main heading and browser title use `presentation.name`. The subtitle describes the task. Keep internal numeric IDs out of public page and Build copy.

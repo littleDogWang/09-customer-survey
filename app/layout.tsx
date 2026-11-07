@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { getScenarioPresentation } from '@/lib/presentation';
 import { UiProviders } from '@/components/UiProviders';
 
 export const viewport: Viewport = {
@@ -8,8 +9,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Service Feedback Survey | Agora',
-  description: 'Share whether your support issue was resolved, rate the service and suggest improvements.',
+  title: getScenarioPresentation().name + ' | Agora',
+  description: getScenarioPresentation().summary,
   icons: {
     icon: [
       { url: '/favicon.ico' },

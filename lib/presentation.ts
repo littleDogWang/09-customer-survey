@@ -4,10 +4,7 @@ export type { ScenarioPresentation } from '@/types/presentation';
 export const presentation: ScenarioPresentation = {
   "id": "09-customer-survey",
   "name": "Service Feedback Survey",
-  "purpose": "Scenario voice conversation",
-  "headline": [
-    "Feedback, by voice."
-  ],
+  "purpose": "Share your support experience",
   "summary": "Discuss a support experience in a short interview and hear a verbal summary.",
   "featuresHeading": "In this conversation",
   "features": [
@@ -42,10 +39,10 @@ export const presentation: ScenarioPresentation = {
     }
   ],
   "developer": {
-    "sourceUrl": "https://github.com/littleDogWang/09-customer-survey",
+    "sourceUrl": "https://github.com/AgoraIO-Community/service-feedback-survey",
     "runCommand": "pnpm install --frozen-lockfile\npnpm run doctor\npnpm run dev",
     "skillsCommand": "npx skills add github:AgoraIO/skills",
-    "assistantPrompt": "Work in this existing 09-customer-survey voice demo. Preserve Agora RTC/RTM lifecycle and the conversation-only first-version boundary. Adapt the assistant instructions and static public background without adding business tools, records, data APIs or persistence.",
+    "assistantPrompt": "Work in this existing Service Feedback Survey voice demo. Preserve Agora RTC/RTM lifecycle and the conversation-only first-version boundary. Adapt the assistant instructions and static public background without adding business tools, records, data APIs or persistence.",
     "docsUrl": "https://docs.agora.io/en/ai/build/build-server-client",
     "sdkUrl": "https://www.npmjs.com/package/agora-agents",
     "consoleUrl": "https://console.agora.io/",

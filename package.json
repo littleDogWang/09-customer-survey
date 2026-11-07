@@ -1,5 +1,5 @@
 {
-  "name": "09-customer-survey",
+  "name": "service-feedback-survey",
   "version": "0.1.0",
   "description": "Turn a short post-support conversation into confirmed, structured feedback.",
   "private": true,
@@ -58,5 +58,13 @@
     "typescript-eslint": "^8.58.1",
     "@tailwindcss/postcss": "^4.3.3"
   },
-  "packageManager": "pnpm@9.15.9"
+  "packageManager": "pnpm@9.15.9",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgoraIO-Community/service-feedback-survey.git"
+  },
+  "homepage": "https://github.com/AgoraIO-Community/service-feedback-survey#readme",
+  "bugs": {
+    "url": "https://github.com/AgoraIO-Community/service-feedback-survey/issues"
+  }
 }
