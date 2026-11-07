@@ -5,6 +5,8 @@ import { EMPTY_INSPECTION, type InspectionSnapshot } from '@/lib/inspection';
 import type { AgentSignalSnapshot } from '@/lib/agent-signal';
 import { getScenarioPresentation } from '@/lib/presentation';
 import { ScenarioIdentity } from './ScenarioIdentity';
+import { Dialog } from './ui/dialog';
+import { ScenarioFaq } from './ScenarioFaq';
 import { ConversationWorkspace } from './ConversationWorkspace';
 import { QuickstartPreCallCard } from './QuickstartPreCallCard';
 import { ScenarioInspector } from './ScenarioInspector';
@@ -276,7 +278,10 @@ function ScenarioShell({ ui, active, loading, error, disabled = false, onStart, 
     : ui.inspection;
   return (
     <div className="demo-shell">
-      <ScenarioIdentity scenario={scenario} onInspect={() => setInspectorOpen(true)} onBuild={() => setBuildOpen(true)} />
+      <Dialog>
+        <ScenarioIdentity scenario={scenario} onInspect={() => setInspectorOpen(true)} onBuild={() => setBuildOpen(true)} />
+        <ScenarioFaq />
+      </Dialog>
       <ConversationWorkspace scenario={scenario} activity={activity} inspection={inspection}>
         {active ? children : inspection.lifecycle === 'ended' ? (
           <section className="demo-session demo-session-ended">
